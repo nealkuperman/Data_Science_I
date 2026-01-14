@@ -30,20 +30,27 @@
 
 \maketitle
 
+
+% ================================================================
+% ================================================================
+%                           ISLP 3.10 
+% ================================================================
+% ================================================================
+
 {\noindent\Large\textbf{ISLP 3.10}\vspace{1em}} 
 
 \noindent This question should be answered using the Carseats data set.
 
-\begin{enumerate}[label=(\alph*)]
-    \item \hyperref[sol:a]{Fit a multiple regression model to predict Sales using Price, Urban, and US.}
-    \item Provide an interpretation of each coefficient in the model. Be careful—some of the variables in the model are qualitative!
-    \item Write out the model in equation form, being careful to handle the qualitative variables properly.
-    \item For which of the predictors can you reject the null hypothesis $H_0 : \beta_j =0$?
-    \item On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.
-    \item How well do the models in (a) and (e) fit the data?
-    \item Using the model from (e), obtain 95\% confidence intervals for
+\begin{enumerate}[label=, leftmargin=1em]
+    \item \hyperref[3.10.a]{(a)} Fit a multiple regression model to predict Sales using Price, Urban, and US.
+    \item \hyperref[3.10.b]{(b)} Provide an interpretation of each coefficient in the model. Be careful—some of the variables in the model are qualitative!
+    \item \hyperref[3.10.c]{(c)} Write out the model in equation form, being careful to handle the qualitative variables properly.
+    \item \hyperref[3.10.d]{(d)} For which of the predictors can you reject the null hypothesis $H_0 : \beta_j =0$?
+    \item \hyperref[3.10.e]{(e)} On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.
+    \item \hyperref[3.10.f]{(f)} How well do the models in (a) and (e) fit the data?
+    \item \hyperref[3.10.g]{(g)} Using the model from (e), obtain 95\% confidence intervals for
     the coefficient(s).
-    \item Is there evidence of outliers or high leverage observations in the
+    \item \hyperref[3.10.h]{(h)} Is there evidence of outliers or high leverage observations in the
     model from (e)?
 \end{enumerate}
 
@@ -81,9 +88,10 @@ The data is a simulated data set containing sales of child car seats at 400 diff
 {\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
 
 
-\label{sol:a}\noindent\textbf{ISLP 3.10 (a)} \newline
+\label{3.10.a}\noindent\textbf{ISLP 3.10 (a)} 
+\vspace{1em}
 
-Table 2 shows the results of a linear model to predict Sales using Price, Urban, and US. The table was generated using the \texttt{statsmodels} library in Python.
+\noindent Table~\ref{tab:ols_carseats_1} shows the results of a linear model to predict Sales using Price, Urban, and US. The table was generated using the \texttt{statsmodels} library in Python.
 
 \begin{table}[h]
 \begin{center}
@@ -119,21 +127,160 @@ Table 2 shows the results of a linear model to predict Sales using Price, Urban,
     %\caption{OLS Regression Results}
     \end{center}
     \caption{OLS Regression Results}
+    \label{tab:ols_carseats_1}
     \vspace{1em}
-    Notes: \newline
-    [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 \end{table}
 
 
+
+\label{3.10.b}\noindent\textbf{ISLP 3.10 (b)} 
+
+\begin{itemize}
+    \item \textbf{Price}: Sales is negatively related to price, with sales decreasing by 54 units per dollar increase in price
+    \item \textbf{Urban\_Yes}: There is not a significant statistical relationship between sales and whether or not a store is in an urban location
+    \item \textbf{US\_Yes}: There is a positive relationship between price and whether a store is located in the US or not. On average, a store located in the US will sell 1200 more units than if they were located outside the US.
+\end{itemize}
+
+\label{3.10.c}\noindent\textbf{ISLP 3.10 (c)} 
+
+    \[
+    \text{Sales} = -0.0545 * \text{Price} + -0.0219 * \text{Urban\_Yes} + 1.2006 * \text{US\_Yes}
+    \]
+
+\label{3.10.d}\noindent\textbf{ISLP 3.10 (d)} 
+
+The \textbf{Urban\_Yes} predictor has a P value of 0.936, meaning we can reject the null hypothesis for it. We can not reject the null hypothesis for any of the other variables.
+
+\vspace{1em}
+
+\label{3.10.e}\noindent\textbf{ISLP 3.10 (e)} 
+
+Table~\ref{tab:ols_carseats_2} shows the results of a linear model to predict Sales using Price and US\_Yes. 
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{lclc}
+        \toprule
+        \textbf{Dep. Variable:}    &      Sales       & \textbf{  R-squared:         } &     0.239   \\
+        \textbf{Model:}            &       OLS        & \textbf{  Adj. R-squared:    } &     0.235   \\
+        \textbf{Method:}           &  Least Squares   & \textbf{  F-statistic:       } &     62.43   \\
+        \textbf{Date:}             & Tue, 13 Jan 2026 & \textbf{  Prob (F-statistic):} &  2.66e-24   \\
+        \textbf{Time:}             &     20:11:19     & \textbf{  Log-Likelihood:    } &   -927.66   \\
+        \textbf{No. Observations:} &         400      & \textbf{  AIC:               } &     1861.   \\
+        \textbf{Df Residuals:}     &         397      & \textbf{  BIC:               } &     1873.   \\
+        \textbf{Df Model:}         &           2      & \textbf{                     } &             \\
+        \textbf{Covariance Type:}  &    nonrobust     & \textbf{                     } &             \\
+        \bottomrule
+        \end{tabular}
+        \begin{tabular}{lcccccc}
+                        & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+        \midrule
+        \textbf{Intercept} &      13.0308  &        0.631     &    20.652  &         0.000        &       11.790    &       14.271     \\
+        \textbf{Price}     &      -0.0545  &        0.005     &   -10.416  &         0.000        &       -0.065    &       -0.044     \\
+        \textbf{US\_Yes}   &       1.1996  &        0.258     &     4.641  &         0.000        &        0.692    &        1.708     \\
+        \bottomrule
+        \end{tabular}
+        \begin{tabular}{lclc}
+        \textbf{Omnibus:}       &  0.666 & \textbf{  Durbin-Watson:     } &    1.912  \\
+        \textbf{Prob(Omnibus):} &  0.717 & \textbf{  Jarque-Bera (JB):  } &    0.749  \\
+        \textbf{Skew:}          &  0.092 & \textbf{  Prob(JB):          } &    0.688  \\
+        \textbf{Kurtosis:}      &  2.895 & \textbf{  Cond. No.          } &     607.  \\
+        \bottomrule
+        \end{tabular}
+
+        \caption{OLS Regression Results for Model with Price and US\_Yes}
+        \label{tab:ols_carseats_2}
+    \end{center}
+\end{table}
+
+\label{3.10.f}\noindent\textbf{ISLP 3.10 (f)} 
+
+Models a and e fit the data equally poorly. Both have an $\text{R}^2$ value of 0.239
+
+\vspace{1em}
+
+\label{3.10.g}\noindent\textbf{ISLP 3.10 (g)} 
+
+Table~\ref{tab:ols_carseats_3} shows the 95\% confidence intervals for the coefficients in the model from (e).
+
+\begin{table}[h]
+    \begin{center}
+        \begin{tabular}{lrr}
+    \toprule
+    & 0 & 1 \\
+    \midrule
+    Intercept & 11.790320 & 14.271265 \\
+    Price & -0.064760 & -0.044195 \\
+    US\_Yes & 0.691520 & 1.707766 \\
+    \bottomrule
+\end{tabular}
+\end{center}
+\caption{95\% Confidence Intervals for Coefficients in Model from (e)}
+\label{tab:ols_carseats_3}
+\end{table}
+
+\label{3.10.h}\noindent\textbf{ISLP 3.10 (h)} 
+
+Table~\ref{tab:ols_carseats_4} shows the high leverage points in the model from (e). The Cook's Distances are plotted in Figure~\ref{fig:ols_carseats_2_cooks_d}.
+
+
+\begin{table}[h]
+    \begin{center}
+        \begin{tabular}{rr}
+            \toprule
+            index & high\_leverage\_points \\
+            \midrule
+            42 & 0.043338 \\
+            125 & 0.025966 \\
+            155 & 0.016106 \\
+            156 & 0.015356 \\
+            159 & 0.015707 \\
+            165 & 0.028567 \\
+            171 & 0.021014 \\
+            174 & 0.029687 \\
+            191 & 0.018039 \\
+            203 & 0.015356 \\
+            208 & 0.018235 \\
+            269 & 0.019195 \\
+            272 & 0.018687 \\
+            313 & 0.023165 \\
+            315 & 0.017049 \\
+            356 & 0.018279 \\
+            365 & 0.017399 \\
+            367 & 0.023707 \\
+            383 & 0.016514 \\
+            386 & 0.016555 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    \caption{High Leverage Points in Model from (e)}
+    \label{tab:ols_carseats_4}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3_10_h_cooks_d.png}
+    \caption{Cook's Distances for Model from (e)}
+    \label{fig:ols_carseats_2_cooks_d}
+\end{figure}
+
 \pagebreak
+
+
+% ================================================================
+% ================================================================
+%                           ISLP 3.14 
+% ================================================================
+% ================================================================
 
 
 {\noindent\Large\textbf{ISLP 3.14}\vspace{1em}} 
 
 \noindent This problem focuses on the \textit{collinearity} problem.
 
-\begin{enumerate}[label=(\alph*)]
-    \item Perform the following commands in Python:
+\begin{enumerate}[label=, leftmargin=1em]
+    \item \hyperref[3.14.a]{(a)} Perform the following commands in Python:
     \begin{lstlisting}[language=Python]
         rng = np.random.default_rng(10)
         x1 = rng.uniform(0, 1, size=100)
@@ -143,12 +290,12 @@ Table 2 shows the results of a linear model to predict Sales using Price, Urban,
     The last line corresponds to creating a linear model in which y is a function of x1 and x2. Write out the form of the linear model.
     What are the regression coefficients?
 
-    \item What is the correlation between x1 and x2? Create a scatterplot displaying the relationship between the variables.
-    \item Using this data, fit a least squares regression to predict y using x1 and x2. Describe the results obtained. What are $\hat{\beta}_1$, $\hat{\beta}_2$ and $\hat{\beta}_3$? How do these relate to the true $\beta_1$, $\beta_2$ and $\beta_3$? Can you reject the null hypothesis $H_0 : \beta_1 = 0$? How about the null hypothesis $H_0 : \beta_2 = 0$?
-    \item Now fit a least squares regression to predict y using only x1. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$?
-    \item Now fit a least squares regression to predict y using only x2. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_2 = 0$?
-    \item Do the results obtained in (c)-(e) contradict each other? Explain your answer.
-    \item Suppose we obtain one additional observation, which was unfortunately mismeasured. We use the function np.concatenate() to add this additional observation to each of x1, x2 and y.
+    \item \hyperref[3.14.b]{(b)} What is the correlation between x1 and x2? Create a scatterplot displaying the relationship between the variables.
+    \item \hyperref[3.14.c]{(c)} Using this data, fit a least squares regression to predict y using x1 and x2. Describe the results obtained. What are $\hat{\beta}_0$, $\hat{\beta}_1$ and $\hat{\beta}_2$? How do these relate to the true $\beta_0$, $\beta_1$ and $\beta_2$? Can you reject the null hypothesis $H_0 : \beta_1 = 0$? How about the null hypothesis $H_0 : \beta_2 = 0$?
+    \item \hyperref[3.14.d]{(d)} Now fit a least squares regression to predict y using only x1. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$?
+    \item \hyperref[3.14.e]{(e)} Now fit a least squares regression to predict y using only x2. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_2 = 0$?
+    \item \hyperref[3.14.f]{(f)} Do the results obtained in (c)-(e) contradict each other? Explain your answer.
+    \item \hyperref[3.14.g]{(g)} Suppose we obtain one additional observation, which was unfortunately mismeasured. We use the function np.concatenate() to add this additional observation to each of x1, x2 and y.
     \begin{lstlisting}[language=Python]
         x1 = np.concatenate([x1, [0.1]])
         x2 = np.concatenate([x2, [0.8]])
@@ -161,16 +308,224 @@ Table 2 shows the results of a linear model to predict Sales using Price, Urban,
 
 {\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
 
+\label{3.14.a}\noindent\textbf{ISLP 3.14 (a)} 
+
+The linear model has the form
+\begin{align*}
+    y &= 2 + 2x_1 + 0.3x_2 + \epsilon \\
+    \\
+    \beta_0 &= 2 \\
+    \beta_1 &= 2 \\
+    \beta_2 &= 0.3 \\
+\end{align*}
+
+\vspace{1em}
+
+\label{3.14.b}\noindent\textbf{ISLP 3.14 (b)} 
+$$corr(x_1, x_2) = \frac{Cov(x_1x_2)}{\sigma_{x_1} * \sigma_{x_2}} = \frac{E[(x_1 - \overline{x_1})(x_2 - \overline{x_2})]}{\sigma_{x_1} * \sigma_{x_2}} = \frac{\sum_{i=1}^{n}(x_{1i} - \bar{x}_1)(x_{2i} - \bar{x}_2)}{\sqrt{\sum_{i=1}^{n}(x_{1i} - \bar{x}_1)^2 \cdot \sum_{i=1}^{n}(x_{2i} - \bar{x}_2)^2}}$$
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3_14_b_scatterplot.png}
+    \caption{Scatterplot of x1 and x2}
+    \label{fig:3_14_b_scatterplot}
+\end{figure}
+
+
+\label{3.14.c}\noindent\textbf{ISLP 3.14 (c)} 
+
+\begin{table}[H]
+\begin{center}
+    \begin{tabular}{lclc}
+        \toprule
+        \textbf{Dep. Variable:}    &        y         & \textbf{  R-squared:         } &     0.291   \\
+        \textbf{Model:}            &       OLS        & \textbf{  Adj. R-squared:    } &     0.276   \\
+        \textbf{Method:}           &  Least Squares   & \textbf{  F-statistic:       } &     19.89   \\
+        \textbf{Date:}             & Tue, 13 Jan 2026 & \textbf{  Prob (F-statistic):} &  5.76e-08   \\
+        \textbf{Time:}             &     21:24:01     & \textbf{  Log-Likelihood:    } &   -130.62   \\
+        \textbf{No. Observations:} &         100      & \textbf{  AIC:               } &     267.2   \\
+        \textbf{Df Residuals:}     &          97      & \textbf{  BIC:               } &     275.1   \\
+        \textbf{Df Model:}         &           2      & \textbf{                     } &             \\
+        \textbf{Covariance Type:}  &    nonrobust     & \textbf{                     } &             \\
+        \bottomrule
+        \end{tabular}
+        \begin{tabular}{lcccccc}
+                    & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+        \midrule
+        \textbf{const} &       1.9579  &        0.190     &    10.319  &         0.000        &        1.581    &        2.334     \\
+        \textbf{x1}    &       1.6154  &        0.527     &     3.065  &         0.003        &        0.569    &        2.661     \\
+        \textbf{x2}    &       0.9428  &        0.831     &     1.134  &         0.259        &       -0.707    &        2.592     \\
+        \bottomrule
+        \end{tabular}
+        \begin{tabular}{lclc}
+        \textbf{Omnibus:}       &  0.051 & \textbf{  Durbin-Watson:     } &    1.964  \\
+        \textbf{Prob(Omnibus):} &  0.975 & \textbf{  Jarque-Bera (JB):  } &    0.041  \\
+        \textbf{Skew:}          & -0.036 & \textbf{  Prob(JB):          } &    0.979  \\
+        \textbf{Kurtosis:}      &  2.931 & \textbf{  Cond. No.          } &     11.9  \\
+        \bottomrule
+    \end{tabular}
+
+    %\caption{OLS Regression Results}
+    \end{center}
+    \caption{OLS Regression Results for Model with x1 and x2}
+    \label{tab:3_14_c_ols_results}
+\end{table}
+
+\vspace{1em}
+\noindent The linear model obtained from the OLS is
+$$ y = 1.9579 + 1.6154x_1 + 0.9428x_2$$
+and 
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{lcc}
+    \toprule
+    \textbf{Variable} & \textbf{True} & \textbf{OLS Model} \\
+    \midrule
+    $\beta_0$ & 2.0 & 1.9579 \\
+    $\beta_1$ & 2.0 & 1.6154 \\
+    $\beta_2$ & 0.3 & 0.9428 \\
+    \bottomrule
+\end{tabular}
+\end{center}
+\caption{Coefficients for Model with x1 and x2}
+\label{tab:3_14_c_coefficients}
+\end{table}
+
+We can reject the null hypothesis $H_0: \beta_1 = 0$ as its t value is large ($t_{\beta_1} = 3.065$) and P value is small ($P_{\beta_1} = 0.003$). However, we can not reject the null hypothesis $H_0: \beta_2 = 0$ because its t value is less than 2 ($t_{\beta_2} = 1.134$) along with a large P value ($P_{\beta_2} = 0.259$)
+
+\vspace{1em}
+\label{3.14.d}\noindent\textbf{ISLP 3.14 (d)} 
+
+Table~\ref{tab:3_14_d_ols_results} shows the results of the OLS regression to predict y using only x1. The goodness of fit of the least squares regression did not change meaningfully when we elmiited x2 as a predictor variable ($R^2_{x1,x2} = 0.291$, $R^2_{x1} = 0.281$). We can reject the null hypothesis $H_0: \beta_1 = 0$ due to the large t value and small P value for x1
+
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{lcccccc}
+                    & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+        \midrule
+        \textbf{const} &       1.9371  &        0.189     &    10.242  &         0.000        &        1.562    &        2.312     \\
+        \textbf{x1}    &       2.0771  &        0.335     &     6.196  &         0.000        &        1.412    &        2.742     \\
+        \bottomrule
+        \end{tabular}
+        \begin{tabular}{lclc}
+        \textbf{  R-squared:         } &     0.281 & \textbf{  Adj. R-squared:    } &     0.274  \\
+        \textbf{  F-statistic:       } &     38.39 & \textbf{  Prob (F-statistic):} &  1.37e-08  \\
+        \bottomrule
+        \end{tabular}
+    \end{center}
+    \caption{OLS Regression Results for Model with x1}
+    \label{tab:3_14_d_ols_results}
+\end{table}
+
+\vspace{1em}
+\label{3.14.e}\noindent\textbf{ISLP 3.14 (e)} 
+
+Table~\ref{tab:3_14_e_ols_results} shows the results of the OLS regression to predict y using only x2. The goodness of fit of the least squares regression with only x2 included did not change meaningfully when we elmiited x1 as a predictor variable ($R^2_{x1,x2} = 0.291$, $R^2_{x2} = 0.222$). We can reject the null hypothesis $H_0: \beta_2 = 0$ due to the large t value and small P value for x2
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{lcccccc}
+                    & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+        \midrule
+        \textbf{const} &       2.3239  &        0.154     &    15.124  &         0.000        &        2.019    &        2.629     \\
+        \textbf{x2}    &       2.9103  &        0.550     &     5.291  &         0.000        &        1.819    &        4.002     \\
+        \bottomrule
+        \end{tabular}
+        \begin{tabular}{lclc}
+        \textbf{  R-squared:         } &     0.222 & \textbf{  Adj. R-squared:    } &     0.214  \\
+        \textbf{  F-statistic:       } &     27.99 & \textbf{  Prob (F-statistic):} &  7.43e-07  \\
+        \bottomrule
+        \end{tabular}
+    \end{center}
+    \caption{OLS Regression Results for Model with x2}
+    \label{tab:3_14_e_ols_results}
+\end{table}
+
+\vspace{1em}
+\label{3.14.f}\noindent\textbf{ISLP 3.14 (f)} 
+
+They do not contradict each other, x1 and x2 explain the variance in y equally well (poorly) with $R^2_{x1} = 0.281$ and $R^2_{x2} = 0.222$. Additionally the null hypothesis can not be rejected when only including 1 predictor, either x1 or x2. These outcomes can be explained by x1 and x2 being colinear (they are highly coorelated).
+
+\vspace{1em}
+\label{3.14.g}\noindent\textbf{ISLP 3.14 (g)} 
+
+Table~\ref{tab:3_14_f_models} shows the results of the OLS regression to predict y using x1, x2, x1 only, and x2 only. Figure~\ref{fig:3_14_g} shows some diagnostic plots for the full model. 
+
+\begin{table}[H]
+    \begin{center}
+    \textbf{Full Model} \\ \vspace{0.5em}
+    \begin{tabular}{lcccc}
+        \toprule
+        & \textbf{coef} & \textbf{t value} & \textbf{p value} & \textbf{std err} \\
+        \midrule
+        intercept & 2.0618 & 10.7201 & 0.0000 & 0.1923 \\
+        $x_1$ & 0.8575 & 1.8383 & 0.0690 & 0.4665 \\
+        $x_2$ & 2.2663 & 3.2160 & 0.0018 & 0.7047 \\
+        \midrule
+        R-squared & 0.2916 & \multicolumn{2}{c}{F-statistic} & 20.1727 \\
+        \bottomrule
+    \end{tabular}
+
+    \vspace{1.5em}
+    \textbf{$x_1$ Only Model} \\ \vspace{0.5em}
+    \begin{tabular}{lcccc}
+        \toprule
+        & \textbf{coef} & \textbf{t value} & \textbf{p value} & \textbf{std err} \\
+        \midrule
+        intercept & 2.0739 & 10.3098 & 0.0000 & 0.2012 \\
+        $x_1$ & 1.8760 & 5.2360 & 0.0000 & 0.3583 \\
+        \midrule
+        R-squared & 0.2169 & \multicolumn{2}{c}{F-statistic} & 27.4159 \\
+        \bottomrule
+    \end{tabular}
+
+    \vspace{1.5em}
+    \textbf{$x_2$ Only Model} \\ \vspace{0.5em}
+        \begin{tabular}{lcccc}
+            \toprule
+            & \textbf{coef} & \textbf{t value} & \textbf{p value} & \textbf{std err} \\
+            \midrule
+            intercept & 2.2840 & 15.0879 & 0.0000 & 0.1514 \\
+            $x_2$ & 3.1458 & 6.0082 & 0.0000 & 0.5236 \\
+            \midrule
+            R-squared & 0.2672 & \multicolumn{2}{c}{F-statistic} & 36.0984 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    \caption{OLS Regression Results for Models with x1, x2, x1 only, and x2 only}
+    \label{tab:3_14_f_models}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3_14_g_vif.png}
+    \caption{Diagnostic Plots for Full Model}
+    \label{fig:3_14_g}
+\end{figure}
+
+\vspace{1em}
+With the added point, we can no longer reject the null hypothesis for $\beta_1$, as the t value is now 1.8383 and the P value is now 0.0690. We can now, however, reject the null hypothesis for $\beta_2$, as the t value is now 3.2160 and the P value is now 0.0018. The added point is a high-leverage point and an outlier in the full model. All models fit the data equally well (poorly), with $R^2$ values all less than 0.3.
+
+The added point does have a high leverage (0.347) but is not an outlier is an outlier because its Cook's Distance is not greater than 1 (Cook's Distance = 0.316).
+
+
 \pagebreak
 
+
+% ================================================================
+% ================================================================
+%                           ISLP 3.15 
+% ================================================================
+% ================================================================
 {\noindent\Large\textbf{ISLP 3.15 (a, b, d)}\vspace{1em}} 
 
 \noindent This problem involves the Boston data set, which we saw in the lab for this chapter. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are the predictors.
 
-\begin{enumerate}[label=(\alph*)]
-    \item For each predictor, fit a simple linear regression model to predict the response. Describe your results. In which of the models is there a statistically significant association between the predictor and the response? Create some plots to back up your assertions.
-    \item Fit a multiple regression model to predict the response using all of the predictors. Describe your results. For which predictors can we reject the null hypothesis $H_0 : \beta_j = 0$?
-    \item[(d)] Is there evidence of non-linear association between any of the predictors and the response? To answer this question, for each predictor X, fit a model of the form
+\begin{enumerate}[label=, leftmargin=1em]
+    \item \hyperref[3.15.a]{(a)} For each predictor, fit a simple linear regression model to predict the response. Describe your results. In which of the models is there a statistically significant association between the predictor and the response? Create some plots to back up your assertions.
+    \item \hyperref[3.15.b]{(b)} Fit a multiple regression model to predict the response using all of the predictors. Describe your results. For which predictors can we reject the null hypothesis $H_0 : \beta_j = 0$?
+    \item \hyperref[3.15.d]{(d)} Is there evidence of non-linear association between any of the predictors and the response? To answer this question, for each predictor X, fit a model of the form
     \begin{align}
         y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon
     \end{align}
@@ -179,6 +534,55 @@ Table 2 shows the results of a linear model to predict Sales using Price, Urban,
 \noindent\rule{\textwidth}{0.4pt}
 
 {\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+\label{3.15.a}\noindent\textbf{ISLP 3.15 (a)} 
+
+\vspace{1em}
+Figure~\ref{fig:3_15_a_scatter} shows the scatterplots for each predictor. Figure~\ref{fig:3_15_a_residuals} shows the residuals for each predictor. Table~\ref{tab:3_15_a_r_squared} shows the R-squared for each predictor. All R-squared values are less than 0.4, indicating that the univariatemodels are not very good at predicting the response.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3_15_a_scatter.png}
+    \caption{Scatterplots for Each Predictor}
+    \label{fig:3_15_a_scatter}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3_15_a_residuals.png}
+    \caption{Residuals for Each Predictor}
+    \label{fig:3_15_a_residuals}
+\end{figure}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{lr}
+        \toprule
+        predictor & r\_squared \\
+        \midrule
+        rad & 0.391257 \\
+        tax & 0.339614 \\
+        lstat & 0.207591 \\
+        nox & 0.177217 \\
+        indus & 0.165310 \\
+        medv & 0.150780 \\
+        dis & 0.144149 \\
+        age & 0.124421 \\
+        ptratio & 0.084068 \\
+        rm & 0.048069 \\
+        zn & 0.040188 \\
+        chas & 0.003124 \\
+        \bottomrule
+        \end{tabular}
+    \end{center}
+    \caption{R-squared for Each Predictor}
+    \label{tab:3_15_a_r_squared}
+\end{table}
+
+
+\label{3.15.b}\noindent\textbf{ISLP 3.15 (b)} 
+
+\label{3.15.d}\noindent\textbf{ISLP 3.15 (d)} 
 
 \pagebreak
 

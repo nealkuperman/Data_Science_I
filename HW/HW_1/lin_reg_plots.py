@@ -116,6 +116,7 @@ class LinearRegDiagnostic():
                 ax=ax[1,1],
                 high_leverage_threshold = kwargs.get('high_leverage_threshold'),
                 cooks_threshold = kwargs.get('cooks_threshold'))
+            plt.savefig("../images/3_14_g_vif.png", dpi=300)
             plt.show()
 
         return self.vif_table(), fig, ax,
