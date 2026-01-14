@@ -1,0 +1,51 @@
+\documentclass{report}
+\input{./../setup/preamble}
+% \graphicspath{{./../images/}}
+
+\makeindex
+% \phantom{\nabla_{u_i} \mathcal{L}:}&\quad \phantom{u_i} = -\lambda_{i+1} \\
+
+\usepackage{subfiles} % Best loaded last in the preamble
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+\makeindex[columns=1]
+\setcounter{tocdepth}{0}
+
+\title{Data Science I: Notes}
+\author{Neal Kuperman}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\textbf{Standard Error}
+\begin{align}
+    \mathrm{Var}(\hat{\mu}) = \mathrm{SE}(\hat{\mu})^2 = \frac{\sigma^2}{n}
+\end{align}
+where $\sigma$ is the standard deviation of each of the realizations of $y_i$ of Y. Roughly speaking, the standard error tells us the average amount that this estimate $\hat{\mu}$ deviates from the true mean $\mu$.
+
+\vspace{1em}
+
+\textbf{Standard Error} $\mathbf{\hat{\beta}_0}$ \textbf{and} $\mathbf{\hat{\beta}_1}$
+\begin{align}
+    \mathrm{SE}(\hat{\beta}_0)^2 &= \sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2} \right) \\
+    \mathrm{SE}(\hat{\beta}_1)^2 &= \frac{\sigma^2}{\sum_{i=1}^n (x_i - \bar{x})^2}
+\end{align}
+where $\sigma^2$ is the variance of the error term $\mathrm{Var}(\epsilon)$. It is assumed that the errors $\epsilon_i$ are independent and identically distributed (i.i.d.) with mean 0 and variance $\sigma^2$.
+
+\vspace{1em}
+
+\textbf{Residual Standard Error}
+\begin{align}
+    \mathrm{RSE} = \sqrt{\frac{RSS}{n-2}} = \sqrt{\frac{1}{n-2} \sum_{i=1}^n (y_i - \hat{y}_i)^2}
+\end{align}
+where $\hat{y}_i$ is the predicted value of $y_i$ given the independent variables $x_i$. n is the number of observations and p is the number of predictors.
+
+\vspace{1em}
+
+\end{document}
+ 
+
+

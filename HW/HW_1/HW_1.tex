@@ -1,0 +1,202 @@
+\documentclass{report}
+\input{./../../setup/preamble}
+\graphicspath{{./../images/}}
+
+\makeindex
+% \phantom{\nabla_{u_i} \mathcal{L}:}&\quad \phantom{u_i} = -\lambda_{i+1} \\
+
+\usepackage{subfiles} % Best loaded last in the preamble
+\usepackage{titlesec}
+\usepackage{booktabs}
+
+\newcommand{\sectionbreak}{\clearpage}
+
+\makeindex[columns=1]
+\setcounter{tocdepth}{0}
+
+\title{Math 610:Homework 2}
+\author{Neal Kuperman}
+\date{\today}
+
+\lstset{
+    backgroundcolor=\color{orange!10},
+    frame=single,
+    basicstyle=\ttfamily,
+    breaklines=true,
+    xleftmargin=0pt
+}
+
+\begin{document}
+
+\maketitle
+
+{\noindent\Large\textbf{ISLP 3.10}\vspace{1em}} 
+
+\noindent This question should be answered using the Carseats data set.
+
+\begin{enumerate}[label=(\alph*)]
+    \item \hyperref[sol:a]{Fit a multiple regression model to predict Sales using Price, Urban, and US.}
+    \item Provide an interpretation of each coefficient in the model. Be careful—some of the variables in the model are qualitative!
+    \item Write out the model in equation form, being careful to handle the qualitative variables properly.
+    \item For which of the predictors can you reject the null hypothesis $H_0 : \beta_j =0$?
+    \item On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.
+    \item How well do the models in (a) and (e) fit the data?
+    \item Using the model from (e), obtain 95\% confidence intervals for
+    the coefficient(s).
+    \item Is there evidence of outliers or high leverage observations in the
+    model from (e)?
+\end{enumerate}
+
+
+{\vspace{1em}\noindent\textbf{Note(s)}\vspace{1em}}
+
+The data is a simulated data set containing sales of child car seats at 400 different stores. Information on the data set can be found on the \href{https://islp.readthedocs.io/en/latest/datasets/Carseats.html}{ISLP documentation}.
+
+\vspace{1em}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lp{11cm}}
+        \toprule
+        \textbf{Variable} & \textbf{Description} \\
+        \midrule
+        Sales & Unit sales (in thousands) at each location \\
+        CompPrice & Price charged by competitor at each location \\
+        Income & Community income level (in thousands of dollars) \\
+        Advertising & Local advertising budget for company at each location (in thousands of dollars) \\
+        Population & Population size in region (in thousands) \\
+        Price & Price company charges for car seats at each site \\
+        ShelveLoc & Factor with levels Bad, Good, Medium — quality of shelving location \\
+        Age & Average age of the local population \\
+        Education & Education level at each location \\
+        Urban & Factor (No/Yes) — whether store is in urban or rural location \\
+        US & Factor (No/Yes) — whether store is in the US or not \\
+        \bottomrule
+    \end{tabular}
+    \caption{Carseats Dataset Variables}
+    \label{tab:carseats}
+    \end{table}
+\noindent\rule{\textwidth}{0.4pt}
+
+{\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+
+\label{sol:a}\noindent\textbf{ISLP 3.10 (a)} \newline
+
+Table 2 shows the results of a linear model to predict Sales using Price, Urban, and US. The table was generated using the \texttt{statsmodels} library in Python.
+
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{lclc}
+    \toprule
+    \textbf{Dep. Variable:}    &      Sales       & \textbf{  R-squared:         } &     0.239   \\
+    \textbf{Model:}            &       OLS        & \textbf{  Adj. R-squared:    } &     0.234   \\
+    \textbf{Method:}           &  Least Squares   & \textbf{  F-statistic:       } &     41.52   \\
+    \textbf{Date:}             & Tue, 13 Jan 2026 & \textbf{  Prob (F-statistic):} &  2.39e-23   \\
+    \textbf{Time:}             &     18:41:11     & \textbf{  Log-Likelihood:    } &   -927.66   \\
+    \textbf{No. Observations:} &         400      & \textbf{  AIC:               } &     1863.   \\
+    \textbf{Df Residuals:}     &         396      & \textbf{  BIC:               } &     1879.   \\
+    \textbf{Df Model:}         &           3      & \textbf{                     } &             \\
+    \textbf{Covariance Type:}  &    nonrobust     & \textbf{                     } &             \\
+    \bottomrule
+    \end{tabular}
+    \begin{tabular}{lcccccc}
+                        & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+    \midrule
+    \textbf{Intercept}  &      13.0435  &        0.651     &    20.036  &         0.000        &       11.764    &       14.323     \\
+    \textbf{Price}      &      -0.0545  &        0.005     &   -10.389  &         0.000        &       -0.065    &       -0.044     \\
+    \textbf{Urban\_Yes} &      -0.0219  &        0.272     &    -0.081  &         0.936        &       -0.556    &        0.512     \\
+    \textbf{US\_Yes}    &       1.2006  &        0.259     &     4.635  &         0.000        &        0.691    &        1.710     \\
+    \bottomrule
+    \end{tabular}
+    \begin{tabular}{lclc}
+    \textbf{Omnibus:}       &  0.676 & \textbf{  Durbin-Watson:     } &    1.912  \\
+    \textbf{Prob(Omnibus):} &  0.713 & \textbf{  Jarque-Bera (JB):  } &    0.758  \\
+    \textbf{Skew:}          &  0.093 & \textbf{  Prob(JB):          } &    0.684  \\
+    \textbf{Kurtosis:}      &  2.897 & \textbf{  Cond. No.          } &     628.  \\
+    \bottomrule
+    \end{tabular}
+    %\caption{OLS Regression Results}
+    \end{center}
+    \caption{OLS Regression Results}
+    \vspace{1em}
+    Notes: \newline
+    [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+\end{table}
+
+
+\pagebreak
+
+
+{\noindent\Large\textbf{ISLP 3.14}\vspace{1em}} 
+
+\noindent This problem focuses on the \textit{collinearity} problem.
+
+\begin{enumerate}[label=(\alph*)]
+    \item Perform the following commands in Python:
+    \begin{lstlisting}[language=Python]
+        rng = np.random.default_rng(10)
+        x1 = rng.uniform(0, 1, size=100)
+        x2 = 0.5 * x1 + rng.normal(size=100) / 10
+        y = 2 + 2 * x1 + 0.3 * x2 + rng.normal(size=100)
+    \end{lstlisting}
+    The last line corresponds to creating a linear model in which y is a function of x1 and x2. Write out the form of the linear model.
+    What are the regression coefficients?
+
+    \item What is the correlation between x1 and x2? Create a scatterplot displaying the relationship between the variables.
+    \item Using this data, fit a least squares regression to predict y using x1 and x2. Describe the results obtained. What are $\hat{\beta}_1$, $\hat{\beta}_2$ and $\hat{\beta}_3$? How do these relate to the true $\beta_1$, $\beta_2$ and $\beta_3$? Can you reject the null hypothesis $H_0 : \beta_1 = 0$? How about the null hypothesis $H_0 : \beta_2 = 0$?
+    \item Now fit a least squares regression to predict y using only x1. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$?
+    \item Now fit a least squares regression to predict y using only x2. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_2 = 0$?
+    \item Do the results obtained in (c)-(e) contradict each other? Explain your answer.
+    \item Suppose we obtain one additional observation, which was unfortunately mismeasured. We use the function np.concatenate() to add this additional observation to each of x1, x2 and y.
+    \begin{lstlisting}[language=Python]
+        x1 = np.concatenate([x1, [0.1]])
+        x2 = np.concatenate([x2, [0.8]])
+        y = np.concatenate([y, [6]])
+    \end{lstlisting}
+    Re-fit the linear models from (c) to (e) using this new data. What effect does this new observation have on the each of the models? In each model, is this observation an outlier? A high-leverage point? Both? Explain your answers.
+\end{enumerate}
+
+\noindent\rule{\textwidth}{0.4pt}
+
+{\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+\pagebreak
+
+{\noindent\Large\textbf{ISLP 3.15 (a, b, d)}\vspace{1em}} 
+
+\noindent This problem involves the Boston data set, which we saw in the lab for this chapter. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are the predictors.
+
+\begin{enumerate}[label=(\alph*)]
+    \item For each predictor, fit a simple linear regression model to predict the response. Describe your results. In which of the models is there a statistically significant association between the predictor and the response? Create some plots to back up your assertions.
+    \item Fit a multiple regression model to predict the response using all of the predictors. Describe your results. For which predictors can we reject the null hypothesis $H_0 : \beta_j = 0$?
+    \item[(d)] Is there evidence of non-linear association between any of the predictors and the response? To answer this question, for each predictor X, fit a model of the form
+    \begin{align}
+        y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon
+    \end{align}
+\end{enumerate}
+
+\noindent\rule{\textwidth}{0.4pt}
+
+{\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+\pagebreak
+
+
+{\noindent\Large\textbf{ESL 3.17}\vspace{1em}} 
+
+\noindent Repeat the analysis of Table 3.3 on the spam data discussed in Chapter 1. Include LS, Best Subset, Ridge regression, and Lasso. (skip PCR and PLS)
+
+\noindent\rule{\textwidth}{0.4pt}
+
+{\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+\pagebreak
+
+
+
+
+\end{document}
+ 
+
+
