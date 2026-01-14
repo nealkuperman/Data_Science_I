@@ -862,6 +862,64 @@ Looking at the scatter plots, we can see that none of the variables have great n
 
 \noindent Repeat the analysis of Table 3.3 on the spam data discussed in Chapter 1. Include LS, Best Subset, Ridge regression, and Lasso. (skip PCR and PLS)
 
+
+{\vspace{2em}\noindent\textbf{Note(s)}\vspace{1em}}
+
+
+\begin{itemize}
+    \item \textbf{Best Subset}: Best-subset selection drops all variables with coefficients smaller than the Mth largest; this is a form of “hard-thresholding.”
+    \item \textbf{Ridge regression}:
+        $$
+            \hat{\beta}^{\mathrm{ridge}} = 
+            \underset{\beta}{\mathrm{argmin}} \left\{
+                \sum_{i=1}^N 
+                \left( y_i - \beta_0 - \sum_{j=1}^p x_{ij}\beta_j \right)^2 
+                + \lambda \sum_{j=1}^p \beta_j^2
+            \right\}
+            \qquad \text{with } \lambda \geq 1
+        $$
+
+        which can be written in matrix form as 
+        $$
+            \mathrm{RSS}(\lambda) = 
+            \left(\mathbf{y} - \mathbf{X}\beta\right)^T 
+                \left(\mathbf{y} - \mathbf{X}\beta\right) + 
+                    \lambda\beta^2\beta
+        $$
+        with
+        $$
+            \hat{\beta}^{ridge} = (\mathbf{X}^T\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^T\mathbf{y}
+        $$
+
+    \item \textbf{Lasso}: Similar to ridge but with an $\mathrm{L}_1$ penelty instead of $\mathrm{L}_2$:
+        $$
+            \hat{\beta}^{\mathrm{lasso}} = 
+            \underset{\beta}{\mathrm{argmin}} \left\{
+                \sum_{i=1}^N 
+                \left( y_i - \beta_0 - \sum_{j=1}^p x_{ij}\beta_j \right)^2 
+            \right\} 
+        $$
+        $$
+            \text{subject to } \, \sum_{j=1}^p|\beta_j| \leq t
+        $$
+
+        or equivalently in *Lagrangian form*
+        $$
+            \hat{\beta}^{\mathrm{ridge}} = 
+            \underset{\beta}{\mathrm{argmin}} \left\{
+                \frac{1}{2}\sum_{i=1}^N 
+                \left( y_i - \beta_0 - \sum_{j=1}^p x_{ij}\beta_j \right)^2 
+                + \lambda \sum_{j=1}^p |\beta_j|
+            \right\}
+            \qquad \text{with } \lambda \geq 1
+        $$
+
+        \vspace{1em}
+        \textbf{NOTE}: t should be adaptively chosen to minimize an estimate of expected prediction error.
+
+        \textbf{NOTE}: Ridge regression does a proportional shrinkage. Lasso translates each coefficient by a constant factor $\lambda$, truncating at zero (“soft thresholding)
+\end{itemize}
+
 \noindent\rule{\textwidth}{0.4pt}
 
 {\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
