@@ -8,7 +8,7 @@
 \usepackage{subfiles} % Best loaded last in the preamble
 \usepackage{titlesec}
 \usepackage{booktabs}
-
+\usepackage{longtable}
 \newcommand{\sectionbreak}{\clearpage}
 
 \makeindex[columns=1]
@@ -61,7 +61,7 @@ The data is a simulated data set containing sales of child car seats at 400 diff
 
 \vspace{1em}
 
-\begin{table}[h]
+\begin{table}[H]
     \centering
     \begin{tabular}{lp{11cm}}
         \toprule
@@ -93,7 +93,7 @@ The data is a simulated data set containing sales of child car seats at 400 diff
 
 \noindent Table~\ref{tab:ols_carseats_1} shows the results of a linear model to predict Sales using Price, Urban, and US. The table was generated using the \texttt{statsmodels} library in Python.
 
-\begin{table}[h]
+\begin{table}[H]
 \begin{center}
     \begin{tabular}{lclc}
     \toprule
@@ -203,7 +203,7 @@ Models a and e fit the data equally poorly. Both have an $\text{R}^2$ value of 0
 
 Table~\ref{tab:ols_carseats_3} shows the 95\% confidence intervals for the coefficients in the model from (e).
 
-\begin{table}[h]
+\begin{table}[H]
     \begin{center}
         \begin{tabular}{lrr}
     \toprule
@@ -224,7 +224,7 @@ Table~\ref{tab:ols_carseats_3} shows the 95\% confidence intervals for the coeff
 Table~\ref{tab:ols_carseats_4} shows the high leverage points in the model from (e). The Cook's Distances are plotted in Figure~\ref{fig:ols_carseats_2_cooks_d}.
 
 
-\begin{table}[h]
+\begin{table}[H]
     \begin{center}
         \begin{tabular}{rr}
             \toprule
@@ -923,6 +923,104 @@ Looking at the scatter plots, we can see that none of the variables have great n
 \noindent\rule{\textwidth}{0.4pt}
 
 {\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+Figure~\ref{fig:ESL_3_17_best_subset_score} shows the best subset score for each model. Figure~\ref{fig:ESL_3_17_coefficients} shows the coefficients for each model. Table~\ref{tab:ESL_3_17: coefficients} shows the coefficients for each model, mirroring table 3.3 in the ESL textbook.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ESL_3_17_best_subset_score.png}
+    \caption{Best Subset Score}
+    \label{fig:ESL_3_17_best_subset_score}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ESL_3_17_coefficients.png}
+    \caption{Coefficients}
+    \label{fig:ESL_3_17_coefficients}
+\end{figure}
+
+
+\begin{longtable}{lrrrr}
+    \toprule
+    & LS & ridge & lasso & best\_subset \\
+    \midrule
+    \endfirsthead
+    
+    \toprule
+    & LS & ridge & lasso & best\_subset \\
+    \midrule
+    \endhead
+    
+    \bottomrule
+    \endfoot
+    
+    intercept & 0.3839 & 0.3839 & 0.3839 & 0.3839 \\
+    word\_freq\_make & -0.0149 & -0.0100 & 0.0000 & -0.0137 \\
+    word\_freq\_address & -0.0133 & -0.0111 & 0.0000 & -0.0123 \\
+    word\_freq\_all & 0.0175 & 0.0180 & 0.0139 & 0.0169 \\
+    word\_freq\_3d & 0.0170 & 0.0157 & 0.0089 & 0.0169 \\
+    word\_freq\_our & 0.0551 & 0.0498 & 0.0480 & 0.0551 \\
+    word\_freq\_over & 0.0318 & 0.0306 & 0.0297 & 0.0324 \\
+    word\_freq\_remove & 0.0839 & 0.0760 & 0.0857 & 0.0866 \\
+    word\_freq\_internet & 0.0333 & 0.0316 & 0.0305 & 0.0340 \\
+    word\_freq\_order & 0.0254 & 0.0252 & 0.0236 & 0.0249 \\
+    word\_freq\_mail & 0.0065 & 0.0073 & 0.0011 & 0.0000 \\
+    word\_freq\_receive & 0.0053 & 0.0090 & 0.0000 & 0.0000 \\
+    word\_freq\_will & -0.0219 & -0.0183 & -0.0088 & -0.0222 \\
+    word\_freq\_people & 0.0038 & 0.0055 & 0.0000 & 0.0000 \\
+    word\_freq\_report & 0.0005 & 0.0019 & 0.0000 & 0.0000 \\
+    word\_freq\_addresses & 0.0055 & 0.0089 & 0.0044 & 0.0089 \\
+    word\_freq\_free & 0.0669 & 0.0613 & 0.0648 & 0.0682 \\
+    word\_freq\_business & 0.0269 & 0.0282 & 0.0250 & 0.0283 \\
+    word\_freq\_email & 0.0268 & 0.0254 & 0.0216 & 0.0252 \\
+    word\_freq\_you & 0.0231 & 0.0248 & 0.0238 & 0.0249 \\
+    word\_freq\_credit & 0.0318 & 0.0295 & 0.0280 & 0.0326 \\
+    word\_freq\_your & 0.0681 & 0.0620 & 0.0718 & 0.0709 \\
+    word\_freq\_font & 0.0445 & 0.0378 & 0.0340 & 0.0483 \\
+    word\_freq\_000 & 0.0562 & 0.0516 & 0.0559 & 0.0564 \\
+    word\_freq\_money & 0.0328 & 0.0305 & 0.0259 & 0.0327 \\
+    word\_freq\_hp & -0.0394 & -0.0356 & -0.0329 & -0.0357 \\
+    word\_freq\_hpl & -0.0179 & -0.0189 & -0.0157 & -0.0176 \\
+    word\_freq\_george & -0.0400 & -0.0359 & -0.0283 & -0.0387 \\
+    word\_freq\_650 & 0.0078 & 0.0033 & 0.0000 & 0.0000 \\
+    word\_freq\_lab & -0.0129 & -0.0113 & 0.0000 & 0.0000 \\
+    word\_freq\_labs & -0.0284 & -0.0227 & -0.0069 & -0.0122 \\
+    word\_freq\_telnet & -0.0145 & -0.0082 & 0.0000 & 0.0000 \\
+    word\_freq\_857 & -0.0227 & 0.0071 & 0.0000 & 0.0000 \\
+    word\_freq\_data & -0.0278 & -0.0251 & -0.0207 & -0.0295 \\
+    word\_freq\_415 & 0.0438 & 0.0099 & 0.0000 & 0.0000 \\
+    word\_freq\_85 & -0.0156 & -0.0132 & -0.0030 & 0.0000 \\
+    word\_freq\_technology & 0.0121 & 0.0069 & 0.0000 & 0.0000 \\
+    word\_freq\_1999 & -0.0186 & -0.0189 & -0.0188 & -0.0210 \\
+    word\_freq\_parts & -0.0165 & -0.0138 & -0.0048 & -0.0155 \\
+    word\_freq\_pm & -0.0062 & -0.0077 & -0.0027 & 0.0000 \\
+    word\_freq\_direct & 0.0216 & 0.0157 & 0.0000 & 0.0000 \\
+    word\_freq\_cs & 0.0035 & -0.0003 & 0.0000 & 0.0000 \\
+    word\_freq\_meeting & -0.0268 & -0.0253 & -0.0260 & -0.0323 \\
+    word\_freq\_original & -0.0123 & -0.0121 & -0.0059 & -0.0116 \\
+    word\_freq\_project & -0.0207 & -0.0192 & -0.0123 & -0.0212 \\
+    word\_freq\_re & -0.0326 & -0.0297 & -0.0245 & -0.0338 \\
+    word\_freq\_edu & -0.0365 & -0.0321 & -0.0262 & -0.0353 \\
+    word\_freq\_table & -0.0102 & -0.0093 & -0.0004 & -0.0100 \\
+    word\_freq\_conference & -0.0171 & -0.0157 & -0.0084 & -0.0169 \\
+    char\_freq\_; & -0.0328 & -0.0259 & -0.0176 & -0.0331 \\
+    char\_freq\_( & -0.0199 & -0.0174 & -0.0053 & -0.0131 \\
+    char\_freq\_[ & -0.0085 & -0.0074 & 0.0000 & 0.0000 \\
+    char\_freq\_! & 0.0445 & 0.0406 & 0.0398 & 0.0452 \\
+    char\_freq\_\$ & 0.0607 & 0.0571 & 0.0600 & 0.0619 \\
+    char\_freq\_\# & 0.0171 & 0.0154 & 0.0055 & 0.0000 \\
+    capital\_run\_length\_avg & 0.0062 & 0.0069 & 0.0023 & 0.0094 \\
+    capital\_run\_length\_long & 0.0069 & 0.0104 & 0.0000 & 0.0000 \\
+    capital\_run\_length\_total & 0.0554 & 0.0483 & 0.0565 & 0.0596 \\
+    \midrule
+    test R2 & 0.5419 & 0.5450 & 0.5302 & 0.5420 \\
+    test error & 0.1114 & 0.1107 & 0.1143 & 0.1114 \\
+    \bottomrule
+    \caption{ESL 3.17: Model Coefficients}
+    \label{tab:ESL_3_17: coefficients}
+\end{longtable}
+
 
 \pagebreak
 
