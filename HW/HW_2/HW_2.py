@@ -5,14 +5,13 @@
 # **Neal Kuperman**
 # 
 
-# In[119]:
+# In[75]:
 
 
 #%% Packages
 import os
 
 from ISLP import load_data, confusion_table
-from ISLP.models import ModelSpec as MS
 
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import subplots
@@ -39,14 +38,13 @@ from sklearn.inspection import DecisionBoundaryDisplay
 
 from IPython.display import display, HTML
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 RANDOM_STATE = 1
 VERBOSE = False
 PRINT_LATEX = False
 SAVE_FIGS = False
 
-# Set working directory to the script's folder
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # ## Problem 1: College Data Analysis
 # 
@@ -70,7 +68,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # 
 # **f)** Compare the results from the various methods. Which method would you recommend?
 
-# In[120]:
+# In[76]:
 
 
 college_original = load_data("College")
@@ -80,7 +78,7 @@ if VERBOSE:
     display(college_original.describe().round(3))
 
 if PRINT_LATEX:
-    desc = college_original.describe()
+    desc = college_original.describe().round(3)
 
     # Number of columns per table
     cols_per_table = 6
@@ -106,7 +104,7 @@ if PRINT_LATEX:
 # 4) Add intercept column to train and test dfs which is needed when passing a dataframe into statsmodel OLS function
 # 
 
-# In[121]:
+# In[77]:
 
 
 y = college_original["Apps"]
@@ -143,7 +141,7 @@ if VERBOSE:
 
 # **a)** Fit a Linear Model using least squares and report the estimate of the test error.
 
-# In[122]:
+# In[78]:
 
 
 # Linear model and error report
@@ -179,7 +177,7 @@ if PRINT_LATEX:
 
 # **b)** Fit a *regression* tree to the data. Summarize the results. Unless the number of terminal nodes is large, display the tree graphically. Report its MSE.
 
-# In[123]:
+# In[79]:
 
 
 def fit_and_plot_tree(X_train, y_train, X_test, y_test, max_depth, save_fig=False):
@@ -197,7 +195,7 @@ def fit_and_plot_tree(X_train, y_train, X_test, y_test, max_depth, save_fig=Fals
         print(f"Tree w/ max depth = {max_depth}")
         print("="*60)   
 
-        if max_depth < 5:
+        if max_depth is not None and max_depth < 5:
             fig, ax = plt.subplots(figsize=(18, 10))
             plot_tree(tree, max_depth=max_depth, feature_names=pd.get_dummies(X_train).columns, ax=ax, fontsize=10, filled=True)
             ax.set_title(f"Tree w/ max depth = {max_depth}")
@@ -215,6 +213,7 @@ def fit_and_plot_tree(X_train, y_train, X_test, y_test, max_depth, save_fig=Fals
 
 tree_depth_3 = fit_and_plot_tree(X_train, y_train, X_test, y_test, 3)
 tree_depth_10 = fit_and_plot_tree(X_train, y_train, X_test, y_test, 10)
+tree_depth_none = fit_and_plot_tree(X_train, y_train, X_test, y_test, None)
 
 importances_3 = pd.Series(
     tree_depth_3.feature_importances_,
@@ -226,19 +225,27 @@ importances_10 = pd.Series(
     index=pd.get_dummies(X_train).columns
 ).sort_values(ascending=False)
 
-if VERBOSE:
-    print(importances_3.head(10))
-    print(importances_10.head(10))
+importances_none = pd.Series(
+    tree_depth_none.feature_importances_,
+    index=pd.get_dummies(X_train).columns
+).sort_values(ascending=False)
 
+if VERBOSE:
+    display(importances_3.head(10))
+    display(importances_10.head(10))
+    display(importances_none.head(10))
+
+
+# Three initial regression trees were created with maximum depths of 3, 10, and unrestricted. Setting max_depth=None allows the algorithm to expand nodes until all leaves are pure or contain fewer than min_samples_split samples. The unrestricted tree reached a depth of 20 with 537 leaves.
 
 # **c)** Use Cross validation to determine whether pruning is helpful and determine the optimal size for the pruned tree. Compare the pruned and un-pruned trees. Report MSE for the pruned tree. Which predictors seem to be the most important?
 # 
 # We will use the `cost_complexity_pruning_path()` method of the `DecisionTreeRegressor` class to extract cost-complexity values. We will use the tree with a max depth of 10 to see how much reduction in complexity the pruning can achieve
 
-# In[124]:
+# In[80]:
 
 
-path = tree_depth_10.cost_complexity_pruning_path(X_train, y_train)
+path = tree_depth_none.cost_complexity_pruning_path(X_train, y_train)
 alphas = path.ccp_alphas
 
 kfold = KFold(10,
@@ -261,7 +268,7 @@ if VERBOSE:
     # print(f"Best Score: {grid.best_score_}")
 
 
-# In[125]:
+# In[83]:
 
 
 best_tree = grid.best_estimator_
@@ -302,7 +309,7 @@ if VERBOSE:
     plt.show()
 
 
-# In[126]:
+# In[84]:
 
 
 importances = pd.Series(
@@ -319,7 +326,7 @@ if PRINT_LATEX:
 # **d)** Use a bagging approach to analyze the data with B = 500 and B = 1000. Compute the MSE. Which predictors seem to be the most important?
 # 
 
-# In[127]:
+# In[47]:
 
 
 def bagging_regressor(X_train, y_train, X_test, y_test, n_estimators, save_fig=False):
@@ -376,7 +383,7 @@ bag_500, bag_1000 = regressors[0], regressors[1]
 
 
 
-# In[128]:
+# In[48]:
 
 
 def print_feature_importance(regressor):
@@ -402,7 +409,7 @@ if VERBOSE:
 # **e)** Repeat (d) with a random forest approach with B = 500 and B = 1000, and m ≈ p = 3.
 # 
 
-# In[129]:
+# In[49]:
 
 
 def RF_regressor(X_train, y_train, X_test, y_test, n_estimators, save_fig=False):
@@ -462,7 +469,7 @@ RF_500, RF_1000 = regressors[0], regressors[1]
 
 
 
-# In[130]:
+# In[50]:
 
 
 def print_feature_importance(regressor):
@@ -507,16 +514,59 @@ if VERBOSE:
 # 
 # ---
 
+# In[51]:
+
+
+# Problem 2 Helper Functions
+
+def calculate_metrics(pos_cls, y_train, y_train_pred):
+    # Confusion matrix for training
+    y_binary = (y_train == pos_cls).astype(int)
+    pred_binary = (y_train_pred == pos_cls).astype(int)
+
+    tn, fp, fn, tp = confusion_matrix(y_binary, pred_binary).ravel()
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0    
+
+    return sensitivity, specificity
+
+def plot_roc_curve(classifier, y_train, X_train, save_fig=False, save_name = ""):
+    # Binarize labels for multiclass
+    y_train_bin = label_binarize(y_train, classes=classifier.classes_)
+    y_train_pred_prob = classifier.predict_proba(X_train)
+
+    # Plot ROC for each class
+    plt.figure(figsize=(8, 6))
+    for i, cls in enumerate(classifier.classes_):
+        fpr, tpr, _ = roc_curve(y_train_bin[:, i], y_train_pred_prob[:, i])
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, label=f'Group {cls} (AUC = {roc_auc:.2f})')
+
+    plt.plot([0, 1], [0, 1], 'k--', label='Chance level')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curves: Multiclass (One-vs-Rest)\n' + save_name)
+    plt.legend() 
+
+    if save_fig and save_name != "":
+        plt.savefig(f'../images/HW_2/{save_name}_roc_curve.png', dpi=300)
+    plt.show()
+
+    auc_train = roc_auc_score(y_train, y_train_pred_prob, multi_class="ovr", average="macro")
+    name = save_name if save_name != "" else classifier.__class__.__name__
+    print(f"{name} train AUC (macro OVR):", auc_train)
+
+
 # </br>
 # </br>
 # 
 # **a)** Perform an exploratory analysis of the training data by examining appropriate plots and comment on how helpful these predictors may be in predicting response.
 # 
 
-# In[131]:
+# In[52]:
 
 
-admin_data = pd.read_csv("./admission.csv")
+admin_data = pd.read_csv("admission.csv")
 
 if VERBOSE:
     display(HTML('<h3>Head of Admission Data</h3>'))
@@ -534,15 +584,17 @@ train_data = admin_data[admin_data.groupby('Group').cumcount(ascending=False) >=
 test_data = admin_data.groupby('Group').tail(4)
 # train_data = admin_data.iloc[:-4]
 # test_data = admin_data.iloc[-4:]
+y = admin_data['Group']
 y_train = train_data['Group']
 y_test = test_data['Group']
+X = admin_data[['GPA', 'GMAT']]
 X_train = train_data[['GPA', 'GMAT']]
 X_test = test_data[['GPA', 'GMAT']]
 
 # display(HTML(admin_data.to_html(max_rows=None)))
 
 
-# In[132]:
+# In[53]:
 
 
 #EDA
@@ -604,7 +656,7 @@ if VERBOSE:
 # **b)** Perform an LDA using the training data. Superimpose the decision boundary on an appropriate display of the data. Does the decision boundary seem sensible? In addition, compute the confusion matrix and overall misclassification rate based on both training and test data. What do you observe?
 # 
 
-# In[133]:
+# In[54]:
 
 
 # Apply Linear Discriminant Analysis
@@ -614,6 +666,13 @@ y_pred_test = lda.predict(X_test)
 y_pred_train = lda.predict(X_train)
 
 lda.classes_
+
+for i, _cls in enumerate(lda.classes_):   
+    lda_training_sensitivity, lda_training_specificity = calculate_metrics(_cls, y_train, y_pred_train)
+    lda_test_sensitivity, lda_test_specificity = calculate_metrics(_cls, y_test, y_pred_test)
+    if VERBOSE:
+        print(f"LDA Training: Class {_cls}: Sensitivity={lda_training_sensitivity:.4f}, Specificity={lda_training_specificity:.4f}")
+        print(f"LDA Test: Class {_cls}: Sensitivity={lda_test_sensitivity:.4f}, Specificity={lda_test_specificity:.4f}")
 
 if VERBOSE:
     display(HTML('<h3>Confusion Matrix for Training Data</h3>'))
@@ -639,7 +698,7 @@ if VERBOSE:
     print(f"Misclassification rate for total data: {misclass_rate_total*100:.2f}%")
 
 
-# In[134]:
+# In[55]:
 
 
 if VERBOSE:
@@ -679,7 +738,7 @@ if VERBOSE:
     plt.show()
 
 
-# In[135]:
+# In[56]:
 
 
 if VERBOSE:
@@ -719,11 +778,21 @@ if VERBOSE:
     plt.show()
 
 
+# In[57]:
+
+
+# LDA ROC Curve and AUC
+if VERBOSE:
+    plot_roc_curve(lda, y_train, X_train, save_fig=False, save_name = "problem_2_lda_training")
+    plot_roc_curve(lda, y_test, X_test, save_fig=False, save_name = "problem_2_lda_test")
+    plot_roc_curve(lda, y, X, save_fig=False, save_name = "problem_2_lda_full")
+
+
 # <!-- Perform an QDA using the training data. Superimpose the decision boundary on an appropriate display of the data. Does the decision boundary seem sensible? In addition, compute the confusion matrix and overall misclassification rate based on both training and test data. What do you observe? -->
 # 
 # **c)** Repeat (b) using QDA.
 
-# In[136]:
+# In[58]:
 
 
 # Apply Linear Discriminant Analysis
@@ -737,11 +806,13 @@ qda.classes_
 if VERBOSE:
     display(HTML('<h3>Confusion Matrix for Training Data</h3>'))
     display(confusion_table(y_pred_train, y_train.values, lda.classes_))
-    print(confusion_table(y_pred_train, y_train.values, lda.classes_).to_latex())
+    if PRINT_LATEX:
+        print(confusion_table(y_pred_train, y_train.values, lda.classes_).to_latex())
 
     display(HTML('<h3>Confusion Matrix for Test Data</h3>'))
     display(confusion_table(y_pred_test, y_test.values, lda.classes_))
-    print(confusion_table(y_pred_test, y_test.values, lda.classes_).to_latex())
+    if PRINT_LATEX:
+        print(confusion_table(y_pred_test, y_test.values, lda.classes_).to_latex())
 
     cm_test = confusion_matrix(y_test, y_pred_test)
     cm_train = confusion_matrix(y_train, y_pred_train)
@@ -754,7 +825,7 @@ if VERBOSE:
     print(f"Misclassification rate for all data: {misclass_rate_total*100:.2f}%")
 
 
-# In[137]:
+# In[59]:
 
 
 if VERBOSE:
@@ -794,6 +865,16 @@ if VERBOSE:
     plt.show()
 
 
+# In[60]:
+
+
+# QDA ROC Curve and AUC
+if VERBOSE:
+    plot_roc_curve(qda, y_train, X_train, save_fig=False, save_name = "problem_2_qda_training")
+    plot_roc_curve(qda, y_test, X_test, save_fig=False, save_name = "problem_2_qda_test")
+    plot_roc_curve(qda, y, X, save_fig=False, save_name = "problem_2_qda_full")
+
+
 # **d)** Fit a KNN with K chosen optimally using test error rate. Report error rate, sensitivity, specificity, and AUC for the optimal KNN based on the training data. Also, report its estimated test error rate.
 # 
 # </br>
@@ -824,7 +905,7 @@ if VERBOSE:
 # [1] https://en.wikipedia.org/wiki/Receiver_operating_characteristic
 # 
 
-# In[138]:
+# In[61]:
 
 
 # Create a pipeline with scaler + KNN
@@ -894,19 +975,13 @@ if VERBOSE:
     print(classification_report(y_train, y_train_pred))
 
 
-# In[139]:
+# In[62]:
 
 
 # Calculate sensitivity & specificity for each class (one-vs-rest)
 classes = knn_opt.classes_
 for i, _cls in enumerate(classes):
-    # Binary: this class vs all others
-    y_binary = (y_train == _cls).astype(int)
-    pred_binary = (y_train_pred == _cls).astype(int)
-
-    tn, fp, fn, tp = confusion_matrix(y_binary, pred_binary).ravel()
-    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
-    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+    sensitivity, specificity = calculate_metrics(_cls, y_train, y_train_pred)
 
     if VERBOSE:
         print(f"Class {_cls}: Sensitivity={sensitivity:.4f}, Specificity={specificity:.4f}")
@@ -974,37 +1049,19 @@ if VERBOSE:
     ax.legend(handles=[train_handle, test_handle], title="Data", loc='upper right')
 
     ax.set_title(f'KNN Decision Boundaries (K={optimal_k})')  # Fixed title
-    plt.savefig('../images/HW_2/problem_2_knn_decision_boundaries.png', dpi=300)
+    if SAVE_FIGS:
+        plt.savefig('../images/HW_2/problem_2_knn_decision_boundaries.png', dpi=300)
     plt.show()
 
 
 
-# In[140]:
+# In[64]:
 
-
-# Binarize labels for multiclass
-y_train_bin = label_binarize(y_train, classes=knn_opt.classes_)
-y_train_pred_prob = knn_opt.predict_proba(X_train)
 
 if VERBOSE:
-    # Plot ROC for each class
-    plt.figure(figsize=(8, 6))
-    for i, cls in enumerate(knn_opt.classes_):
-        fpr, tpr, _ = roc_curve(y_train_bin[:, i], y_train_pred_prob[:, i])
-        roc_auc = auc(fpr, tpr)
-        plt.plot(fpr, tpr, label=f'Group {cls} (AUC = {roc_auc:.2f})')
-
-    plt.plot([0, 1], [0, 1], 'k--', label='Chance level')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curves: Multiclass (One-vs-Rest)')
-    plt.legend() 
-    plt.savefig('../images/HW_2/problem_2_knn_roc_curve.png', dpi=300)
-    plt.show()
-
-    auc_train = roc_auc_score(y_train, y_train_pred_prob, multi_class="ovr", average="macro")
-    print("KNN train AUC (macro OVR):", auc_train)
-    # y_test_pred_prob
+    plot_roc_curve(knn_opt, y_train, X_train, save_fig=SAVE_FIGS, save_name = "problem_2_knn_training")
+    plot_roc_curve(knn_opt, y_test, X_test, save_fig=SAVE_FIGS, save_name = "problem_2_knn_test")
+    plot_roc_curve(knn_opt, y, X, save_fig=SAVE_FIGS, save_name = "problem_2_knn_full")
 
 
 # **e)** Compare the results in (b), (c) and (d). Which classifier would you recommend? Justify your conclusions.

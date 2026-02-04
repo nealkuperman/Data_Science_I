@@ -9,6 +9,7 @@
 \usepackage{titlesec}
 \usepackage{booktabs}
 \usepackage{longtable}
+\usepackage{makecell}
 \newcommand{\sectionbreak}{\clearpage}
 
 \makeindex[columns=1]
@@ -104,9 +105,9 @@ The data is statistics for a large number of US Colleges from the 1995 issue of 
        mean & 3001.64 & 2018.80 & 779.97 & 27.56 & 55.80 & 3699.91 \\
        std & 3870.20 & 2451.11 & 929.18 & 17.64 & 19.80 & 4850.42 \\
        min & 81.00 & 72.00 & 35.00 & 1.00 & 9.00 & 139.00 \\
-       25% & 776.00 & 604.00 & 242.00 & 15.00 & 41.00 & 992.00 \\
-       50% & 1558.00 & 1110.00 & 434.00 & 23.00 & 54.00 & 1707.00 \\
-       75% & 3624.00 & 2424.00 & 902.00 & 35.00 & 69.00 & 4005.00 \\
+       25\% & 776.00 & 604.00 & 242.00 & 15.00 & 41.00 & 992.00 \\
+       50\% & 1558.00 & 1110.00 & 434.00 & 23.00 & 54.00 & 1707.00 \\
+       75\% & 3624.00 & 2424.00 & 902.00 & 35.00 & 69.00 & 4005.00 \\
        max & 48094.00 & 26330.00 & 6392.00 & 96.00 & 100.00 & 31643.00 \\
        \bottomrule
        \end{tabular}       
@@ -124,9 +125,9 @@ The data is statistics for a large number of US Colleges from the 1995 issue of 
        mean & 855.30 & 10440.67 & 4357.53 & 549.38 & 1340.64 & 72.66 \\
        std & 1522.43 & 4023.02 & 1096.70 & 165.11 & 677.07 & 16.33 \\
        min & 1.00 & 2340.00 & 1780.00 & 96.00 & 250.00 & 8.00 \\
-       25% & 95.00 & 7320.00 & 3597.00 & 470.00 & 850.00 & 62.00 \\
-       50% & 353.00 & 9990.00 & 4200.00 & 500.00 & 1200.00 & 75.00 \\
-       75% & 967.00 & 12925.00 & 5050.00 & 600.00 & 1700.00 & 85.00 \\
+       25\% & 95.00 & 7320.00 & 3597.00 & 470.00 & 850.00 & 62.00 \\
+       50\% & 353.00 & 9990.00 & 4200.00 & 500.00 & 1200.00 & 75.00 \\
+       75\% & 967.00 & 12925.00 & 5050.00 & 600.00 & 1700.00 & 85.00 \\
        max & 21836.00 & 21700.00 & 8124.00 & 2340.00 & 6800.00 & 103.00 \\
        \bottomrule
        \end{tabular}
@@ -144,9 +145,9 @@ The data is statistics for a large number of US Colleges from the 1995 issue of 
        mean & 79.70 & 14.09 & 22.74 & 9660.17 & 65.46 \\
        std & 14.72 & 3.96 & 12.39 & 5221.77 & 17.18 \\
        min & 24.00 & 2.50 & 0.00 & 3186.00 & 10.00 \\
-       25% & 71.00 & 11.50 & 13.00 & 6751.00 & 53.00 \\
-       50% & 82.00 & 13.60 & 21.00 & 8377.00 & 65.00 \\
-       75% & 92.00 & 16.50 & 31.00 & 10830.00 & 78.00 \\
+       25\% & 71.00 & 11.50 & 13.00 & 6751.00 & 53.00 \\
+       50\% & 82.00 & 13.60 & 21.00 & 8377.00 & 65.00 \\
+       75\% & 92.00 & 16.50 & 31.00 & 10830.00 & 78.00 \\
        max & 100.00 & 39.80 & 64.00 & 56233.00 & 118.00 \\
        \bottomrule
        \end{tabular}
@@ -156,7 +157,6 @@ The data is statistics for a large number of US Colleges from the 1995 issue of 
 
 \noindent\rule{\textwidth}{0.4pt}
 
-
 {\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
 
 Due to the wide range of values in the college data, the college data was scaled using the standard scalar transform from scikit-learn.
@@ -164,7 +164,8 @@ Due to the wide range of values in the college data, the college data was scaled
 \vspace{1em}
 \label{1.a}\noindent\textbf{1 a)}
 
-\begin{center}
+\begin{table}[H]
+    \centering
     \begin{tabular}{lclc}
     \toprule
     \textbf{Dep. Variable:}    &        y         & \textbf{  R-squared:         } &     0.923   \\
@@ -201,17 +202,17 @@ Due to the wide range of values in the college data, the college data was scaled
     \textbf{Private\_Yes} &    -380.2813  &      187.179     &    -2.032  &         0.043        &     -747.993    &      -12.570     \\
     \bottomrule
     \end{tabular}
-    %\caption{OLS Regression Results}
-\end{center}
+    \caption{OLS Regression Results}
+    \label{tab:ols_regression_results}
+\end{table}
 
 The test MSE for the linear regression model is $642,753.9$ and the test $\mathrm{R^2}$ is $0.946$.
-
 
 \vspace{2em}
 \label{1.b}\noindent\textbf{1 b)}
 \medskip
 
-Two regression tree models with maximum depths of 3 and 10 were fit to the data to establish baseline performance. Training and test MSE and $\mathrm{R^2}$ for the two trees are given in table \ref{tab:mse_r2_regression_trees}. Figure \ref{fig:prob_1_tree_max_depth_3} shows the tree with max depth of 3. The tree with a max depth of 10, not displayed due to its complexity, outperforms the smaller tree in both test MSE and test $\mathrm{R^2}$. The low training MSE and high training $\mathrm{R^2}$ suggest that the tree with a max depth of 10 is overfitting the training data, however, it is still able to generalize well to the test data. The most important feature for both trees is the numbers of applications accepted and the percentage of new students from the top 10\% of the high school class (Table \ref{tab:feature_importance_trees}).
+Three initial regression trees were created with maximum depths of 3, 10, and unrestricted. Setting \texttt{max\_depth=None} allows the algorithm to expand nodes until all leaves are pure or contain fewer than \texttt{min\_samples\_split} samples. The unrestricted tree reached a depth of 20 with 537 leaves. Training and test MSE and $\mathrm{R^2}$ for the three trees are given in table \ref{tab:mse_r2_regression_trees}. Figure \ref{fig:prob_1_tree_max_depth_3} shows the tree with max depth of 3. The tree with an unrestricted max depth and max depth of 10, not displayed due to their complexity, have similar performance on the training data and outperform the smaller tree in both test MSE and test $\mathrm{R^2}$. The low training MSE and high training $\mathrm{R^2}$ suggest that the larger trees are overfitting to the training data, however, they are still able to generalize well to the test data. The most important feature for all trees is the numbers of applications accepted and the percentage of new students from the top 10\% of the high school class (Table \ref{tab:feature_importance_trees}).
 
 \vspace{1em}
 \begin{table}[H]
@@ -222,6 +223,7 @@ Two regression tree models with maximum depths of 3 and 10 were fit to the data 
         \midrule
        3 & $1.579 \times 10^6$ & $1.952 \times 10^6$ & 0.90 & 0.84 \\
        10 & $9,582$ & $1.0699 \times 10^6$ & 0.999 & 0.91\\
+       unrestricted (20 leaves) & $0.0$ & $1.083 \times 10^6$ & 1.0 & 0.91\\
        \bottomrule
        \end{tabular}
     \caption{MSE and $\mathrm{R^2}$ for Regression Trees with Different Max Depths}
@@ -280,6 +282,29 @@ Two regression tree models with maximum depths of 3 and 10 were fit to the data 
             \bottomrule
         \end{tabular}
     \end{minipage}
+    \hfill
+    \vspace{1em}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Max Depth = Unrestricted}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.910207 \\
+            Top10perc & 0.038643 \\
+            Top25perc & 0.016027 \\
+            F.Undergrad & 0.009648 \\
+            Outstate & 0.005583 \\
+            Expend & 0.004808 \\
+            Personal & 0.003827 \\
+            PhD & 0.002809 \\
+            S.F.Ratio & 0.002484 \\
+            Books & 0.001928 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
     \caption{Feature Importance for Regression Trees}
     \label{tab:feature_importance_trees}
 \end{table}
@@ -288,7 +313,7 @@ Two regression tree models with maximum depths of 3 and 10 were fit to the data 
 \label{1.c}\noindent\textbf{1 c)}
 \medskip
 
-To evaluate the effect of pruning, we applied cost-complexity pruning to the tree with maximum depth 10. Figure \ref{fig:pruned_best_tree} shows the pruned best tree, which has an alpha value of 17,157.520. Table \ref{tab:pruned_regression_tree_table} shows the training and test MSE and $\mathrm{R^2}$ for both the unpruned and pruned trees. Pruning improved test MSE and test $\mathrm{R^2}$, indicating reduced overfitting. Table \ref{tab:feature_importance_pruned_regression_tree} shows the feature importance for the pruned tree. The top six features (Accept, Top10perc, Top25perc, F.Undergrad, Outstate, and Expend) are identical to those in the unpruned tree. Personal is the only additional feature with non-zero importance in the pruned tree that was not among the top features in the unpruned model. 
+To evaluate the effect of pruning, we applied cost-complexity pruning to the tree with unrestricted max depth. Figure \ref{fig:pruned_best_tree} shows the pruned best tree, which has an alpha value of 17,157.520. Table \ref{tab:pruned_regression_tree_table} shows the training and test MSE and $\mathrm{R^2}$ for both the unpruned and pruned trees. Pruning improved test MSE and test $\mathrm{R^2}$, indicating a reduction in overfitting. Table \ref{tab:feature_importance_pruned_regression_tree} shows the feature importance for the pruned tree. The top six features (Accept, Top10perc, Top25perc, F.Undergrad, Outstate, and Expend) are identical to those in the unpruned tree. Personal is the only additional feature with non-zero importance in the pruned tree that was not among the top features in the unpruned model. 
 
 \begin{figure}[H]
     \centering
@@ -303,8 +328,8 @@ To evaluate the effect of pruning, we applied cost-complexity pruning to the tre
         \toprule
         \textbf{Tree Type} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
         \midrule
-        Unpruned & $9,582$ & $1.0699 \times 10^6$ & 0.999 & 0.91\\ \\
-        Pruned & $332,673$ & $642,753$ & 0.980 & 0.93\\
+        Unpruned & $0.0$ & $1.0829 \times 10^6$ & 1.0 & 0.91\\ \\
+        Pruned & $332,673$ & $873,227$ & 0.979 & 0.9266\\
         \bottomrule
     \end{tabular}
     \caption{MSE and $\mathrm{R^2}$ for Regression Trees with Different Max Depths}
@@ -490,17 +515,18 @@ I would recommend the random forest with bagging classifier. Although the linear
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{ccccc}
+    \renewcommand{\arraystretch}{2}  % 1.5x row spacing
+    \begin{tabular}{lcccc}
         \toprule
         \textbf{Method} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
         \midrule
-        Linear Regression & $1,251,247.29$ & $642,753.89$ & 0.923 & 0.946\\ \\
-        Best Regression Tree (alpha=17,157.520) & $9,582$ & $1,069,900$ & 0.999 & 0.911\\ \\
-        Pruned Best Regression Tree & $332,673$ & $642,753$ & 0.980 & 0.93\\ \\
-        Bagging, B=500 & $351,729.95$ & $655,166.13$ & 0.978 & 0.945\\ \\
-        Bagging, B=1000 & $325,604.62$ & $652,137.78$ & 0.980 & 0.945\\ \\
-        Random Forest, n estimators=500 & $418,695.37$ & $1,055,332.13$ & 0.974 & 0.911\\ \\
-        Random Forest, n estimators=1000 & $386,329.45$ & $1,086,990.94$ & 0.976 & 0.909\\ \\
+        Linear Regression & $1,251,247$ & $642,754$ & 0.923 & 0.946 \\ 
+        \makecell[l]{Unpruned Best Regression Tree \\ ($\alpha=17,157.520$)} & $0.0$ & $1,082,900$ & 1.0 & 0.909 \\
+        \makecell[l]{Pruned Best Regression Tree} & $332,673$ & $873,227$ & 0.979 & 0.927 \\
+        Bagging, B=500 & $351,730$ & $655,166$ & 0.978 & 0.945 \\
+        Bagging, B=1000 & $325,605$ & $652,138$ & 0.980 & 0.945 \\[.75em] 
+        \makecell[l]{Random Forest \\ n\_estimators=500} & $418,695$ & $1,055,332$ & 0.974 & 0.911 \\[.75em] 
+        \makecell[l]{Random Forest \\ n\_estimators=1000} & $386,329$ & $1,086,991$ & 0.976 & 0.909 \\
         \bottomrule
     \end{tabular}
     \caption{MSE and $\mathrm{R^2}$ for Different Regression Methods}
@@ -537,11 +563,11 @@ Consider the business school admission data available in the admission.csv. The 
 
 {\vspace{1em}\noindent\textbf{Note(s)}\vspace{1em}}
 
-Test/train data was split using the following code:
-\begin{lstlisting}[language=Python]
-train_data = admin_data[admin_data.groupby('Group').cumcount(ascending=False) >= 4]
-test_data = admin_data.groupby('Group').tail(4)
-\end{lstlisting}
+% Test/train data was split using the following code:
+% \begin{lstlisting}[language=Python]
+% train_data = admin_data[admin_data.groupby('Group').cumcount(ascending=False) >= 4]
+% test_data = admin_data.groupby('Group').tail(4)
+% \end{lstlisting}
 
 The following metrics are useful for evaluating the performance of classifiers. We will use some of them when evaluating the performance of the KNN classifier.
 
@@ -571,7 +597,7 @@ The following metrics are useful for evaluating the performance of classifiers. 
 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
 \]
 
-\textbf{ROC Curve}: A Receiver Operating Characteristic (ROC) curve is a graphical plot that illustrates the diagnostic ability of a binary classifier system by plotting the true-positive rate (sensitivity) against the false-positive rate ($1 - \text{specificity}$) across various decision thresholds~\cite{roc_wiki}.
+\textbf{ROC Curve}: A Receiver Operating Characteristic (ROC) curve is a graphical plot that illustrates the diagnostic ability of a binary classifier system by plotting the true-positive rate (sensitivity) against the false-positive rate ($1 - \text{specificity}$) across various decision thresholds\footnote{\url{https://en.wikipedia.org/wiki/Receiver_operating_characteristic}}.
 
 \noindent\rule{\textwidth}{0.4pt}
 
@@ -636,7 +662,7 @@ We can see that the data is relatively balanced across groups and that there is 
 \label{2.b}\noindent\textbf{2 b)}
 \medskip
 
-Figure \ref{fig:problem_2_lda_decision_boundaries} shows the Admission Data with LDA decision boundaries. The boundaries are look reasonable, but there is room for improvement as the misclassification rate for the test data was 25\%. From the test data, we can see that the LDA has the most trouble classifying group 2, however three of the four test data points live on or near the decision boundary. It may be worthwhile exploring different train/test splits to study how much role the sampling has on the classifier's performance. Tables \ref{tab:lda_confusion_matrix}, \ref{tab:lda_confusion_matrix_test}, and \ref{tab:lda_misclassification_rates} show the confusion matrices for the training and test data respectively and the misclassification rates for the training and test data.
+Figure \ref{fig:problem_2_lda_decision_boundaries} shows the Admission Data with LDA decision boundaries. The boundaries look reasonable, but there is room for improvement as the misclassification rate for the test data was 25\% and an AUC of 0.979. From the test data, we can see that the LDA has the most trouble classifying group 2, however three of the four test data points live on or near the decision boundary. It may be worthwhile exploring different train/test splits to study how much role the sampling has on the classifier's performance. Tables \ref{tab:lda_confusion_matrix}, \ref{tab:lda_confusion_matrix_test}, and \ref{tab:lda_misclassification_rates} show the confusion matrices for the training and test data respectively and the misclassification rates for the training and test data.
 
 \begin{figure}[H]
     \centering
@@ -697,7 +723,7 @@ Figure \ref{fig:problem_2_lda_decision_boundaries} shows the Admission Data with
 \label{2.c}\noindent\textbf{2 c)}
 \medskip
 
-Figure \ref{fig:problem_2_qda_decision_boundaries} shows the Admission Data with QDA decision boundaries. The quadratic boundaries provide better separation between classes compared to the linear boundaries from LDA. This is further reflected in the confusion matrices (tables \ref{tab:qda_confusion_matrix_train} and \ref{tab:qda_confusion_matrix_test}) and misclassification rates (table \ref{tab:qda_misclassification_rates}). Going from LDA to QDA, the misclassification rate for the test data decreased from 25\% to 16.67\% and the total misclassification rate decreased from 7.06\% to 4.71\%.
+Figure \ref{fig:problem_2_qda_decision_boundaries} shows the Admission Data with QDA decision boundaries. The quadratic boundaries provide better separation between classes compared to the linear boundaries from LDA. This is further reflected in the confusion matrices (tables \ref{tab:qda_confusion_matrix_train} and \ref{tab:qda_confusion_matrix_test}) and misclassification rates (table \ref{tab:qda_misclassification_rates}). Going from LDA to QDA, the misclassification rate for the test data decreased from 25\% to 16.67\% and the total misclassification rate decreased from 7.06\% to 4.71\%. The AUC for the QDA model on the test data is 0.958, slightly lower than the LDA model's AUC of 0.979.
 
 \begin{figure}[H]
     \centering
@@ -850,7 +876,7 @@ For a multiclass classification problem, we can no longer generate a single ROC 
 \label{2.e}\noindent\textbf{2 e)}
 \medskip    
 
-Fig \ref{fig:decision_boundaries_comparison} shows the decision boundaries for LDA, QDA, and KNN and tables \ref{tab:misclassification_rates_comparison} and \ref{tab:confusion_matrices_comparison}  show misclassification rates and confusion matrices for the training and test data respectively. We can see that the KNN classifier outperforms the other two classifiers, with the KNN having a misclassification rate for the test data of 8.3\% compared to 16.7\% and 25\% for QDA and LDA respectively. Given the lower test error rate and overall error rate, I would recommend the KNN classifier.
+Fig \ref{fig:decision_boundaries_comparison} shows the decision boundaries for LDA, QDA, and KNN and tables \ref{tab:misclassification_rates_comparison} and \ref{tab:confusion_matrices_comparison} show the  performance metrics and confusion matrices for the training and test data respectively. We can see that the KNN classifier outperforms the other two classifiers, with the KNN having a misclassification rate for the test data of 8.3\% compared to 16.7\% and 25\% for QDA and LDA respectively. Given the lower test error rate and overall error rate, I would recommend the KNN classifier.
 
 \begin{figure}[H]
     \centering
@@ -881,19 +907,20 @@ Fig \ref{fig:decision_boundaries_comparison} shows the decision boundaries for L
     \label{fig:decision_boundaries_comparison}
 \end{figure}
 
-% Table 1: Misclassification Rates Comparison
 \begin{table}[H]
     \centering
-    \begin{tabular}{lccc}
+    \begin{tabular}{lcccccc}
         \toprule
-        \textbf{Method} & \textbf{Train Error} & \textbf{Test Error} & \textbf{Total Error} \\
+        & \multicolumn{2}{c}{\textbf{Train}} & \multicolumn{2}{c}{\textbf{Test}} & \multicolumn{2}{c}{\textbf{Total}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+        \textbf{Method} & Error & AUC & Error & AUC & Error & AUC \\
         \midrule
-        LDA & 4.11\% & 25.00\% & 7.06\% \\
-        QDA & 2.74\% & 16.67\% & 4.71\% \\
-        KNN (K=2) & 4.11\% & 8.3\% & 4.7\% \\
+        LDA & 4.11\% & 0.997 & 25.00\% & 0.979 & 7.06\% & 0.991 \\
+        QDA & 2.74\% & 0.999 & 16.67\% & 0.958 & 4.71\% & 0.992 \\
+        KNN (K=2) & 4.11\% & 0.999 & 8.33\% & 0.938 & 4.71\% & 0.989 \\
         \bottomrule
     \end{tabular}
-    \caption{Misclassification Rates by Classification Method}
+    \caption{Classification Performance by Method}
     \label{tab:misclassification_rates_comparison}
 \end{table}
 
@@ -929,6 +956,9 @@ Fig \ref{fig:decision_boundaries_comparison} shows the decision boundaries for L
     \label{tab:confusion_matrices_comparison}
 \end{table}
 
+\pagebreak
+My code can be found in the jupyter notebook \texttt{HW\_2.ipynb} hosted at 
+\url{https://github.com/nealkuperman/Data_Science_I/tree/main/HW/HW_2}. The python script has the same code as the jupyter notebook without the markdown cells and in-line figures and tables. 
 \end{document}
  
 
