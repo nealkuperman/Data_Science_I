@@ -1,0 +1,147 @@
+erDiagram
+    TEAM {
+        int team_id PK
+        string team_name
+        string team_abbreviation
+        string city
+        string conference
+        string division
+    }
+    
+    PLAYER {
+        int player_id PK
+        string first_name
+        string last_name
+        date birth_date
+        string position
+        int height_inches
+        int weight_lbs
+        int draft_year
+        int draft_round
+        int draft_pick
+    }
+    
+    
+    GAME {
+        int game_id PK
+        date game_date
+        time game_time
+        int season_year
+        string season_type
+        int home_team_id FK
+        int away_team_id FK
+        int home_team_score
+        int away_team_score
+
+    }
+    
+    PLAYER_BOX_SCORE {
+        int box_score_id PK
+        int game_id FK
+        int player_id FK
+        int team_id FK
+        int minutes_played
+        int points
+        int field_goals_made
+        int field_goals_attempted
+        int three_pointers_made
+        int three_pointers_attempted
+        int free_throws_made
+        int free_throws_attempted
+        int offensive_rebounds
+        int defensive_rebounds
+        int total_rebounds
+        int assists
+        int steals
+        int blocks
+        int turnovers
+        int personal_fouls
+        int plus_minus
+        boolean started
+    }
+    
+    TEAM_BOX_SCORE {
+        int team_box_score_id PK
+        int game_id FK
+        int team_id FK
+        int points
+        int field_goals_made
+        int field_goals_attempted
+        int three_pointers_made
+        int three_pointers_attempted
+        int free_throws_made
+        int free_throws_attempted
+        int offensive_rebounds
+        int defensive_rebounds
+        int total_rebounds
+        int assists
+        int steals
+        int blocks
+        int turnovers
+        int personal_fouls
+        int largest_lead
+        boolean is_home_team
+    }
+
+    TEAM ||--o{ GAME : "plays home"
+    TEAM ||--o{ GAME : "plays away"
+    GAME ||--o{ PLAYER_BOX_SCORE : contains
+    GAME ||--o{ TEAM_BOX_SCORE : contains
+    PLAYER ||--o{ PLAYER_BOX_SCORE : records
+    TEAM ||--o{ PLAYER_BOX_SCORE : "player represents"
+    TEAM ||--o{ TEAM_BOX_SCORE : records
+
+%% TRADITIONAL PLAYER STATS (NBA.COM)
+MIN	
+FGM	
+FGA	
+FG%	
+3PM	
+3PA	
+3P%	
+FTM	
+FTA	
+FT%	
+OREB	
+DREB	
+REB	
+AST	
+STL	
+BLK	
+TO	
+PF	
+PTS	+/-
+
+%% ADVANCED PLAYER STATS (NBA.COM)
+OFFRTG	
+DEFRTG	
+NETRTG	
+AST%	
+AST/TO	
+AST RATIO	
+OREB%	
+DREB%	
+REB%	
+TO RATIO	
+EFG%	
+TS%	USG%	
+PACE	
+PIE%	
+WPA	WPA/48	
+WIN SHARES	
+PIE SHARES	
+PIE SCORE
+
+HUSTLE STATS (NBA.COM)
+SCREEN
+AST	SCREEN
+AST PTS	deflections	OFF LOOSE BALLS
+RECOVERED	DEF LOOSE BALLS
+RECOVERED	LOOSE BALLS
+RECOVERED	CHARGES
+DRAWN	CONTESTED
+2PT SHOTS	CONTESTED
+3PT SHOTS	CONTESTED
+SHOTS	
+OFF BOX OUTS	
+DEF BOX OUTS	BOX OUTS

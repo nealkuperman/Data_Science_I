@@ -1,0 +1,935 @@
+\documentclass{report}
+\input{./../../setup/preamble}
+\graphicspath{{./../images/HW_2/}}
+
+\makeindex
+% \phantom{\nabla_{u_i} \mathcal{L}:}&\quad \phantom{u_i} = -\lambda_{i+1} \\
+
+\usepackage{subfiles} % Best loaded last in the preamble
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{longtable}
+\newcommand{\sectionbreak}{\clearpage}
+
+\makeindex[columns=1]
+\setcounter{tocdepth}{0}
+
+\title{Data Science I: Homework 2}
+\author{Neal Kuperman}
+\date{\today}
+
+\lstset{
+    backgroundcolor=\color{orange!10},
+    frame=single,
+    basicstyle=\ttfamily,
+    breaklines=true,
+    xleftmargin=0pt
+}
+
+\begin{document}
+
+\maketitle
+
+
+% ================================================================
+% ================================================================
+%                 Problem 1: College Data Analysis 
+% ================================================================
+% ================================================================
+
+{\noindent\Large\textbf{Problem 1: College Data Analysis}\vspace{1em}} 
+
+% \section{Problem 1: College Data Analysis}
+
+Consider the \texttt{College} data from the ISLP package. Details about the data is described on page 65 of the ISLP textbook for this class (\url{https://islp.readthedocs.io/en/latest/datasets/College.html}). We would like to \textbf{\textit{predict}} the \underline{number of applications} received using the other variables. 80\% of the data (randomly generated) will be treated as training data. The rest will be the test data.
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\begin{enumerate}[label=, leftmargin=1em]
+    \item \hyperref[1.a]{(a)} Fit a linear model using least squares and report the estimate of the test error.
+    
+    \item \hyperref[1.b]{(b)} Fit a tree to the data. Summarize the results. Unless the number of terminal nodes is large, display the tree graphically. Report its MSE.
+    
+    \item \hyperref[1.c]{(c)} Use Cross validation to determine whether pruning is helpful and determine the optimal size for the pruned tree. Compare the pruned and un-pruned trees. Report MSE for the pruned tree. Which predictors seem to be the most important?
+    
+    \item \hyperref[1.d]{(d)} Use a bagging approach to analyze the data with $B = 500$ and $B = 1000$. Compute the MSE. Which predictors seem to be the most important?
+    
+    \item \hyperref[1.e]{(e)} Repeat (d) with a random forest approach with $B = 500$ and $B = 1000$, and $m \approx p = 3$.
+    
+    \item \hyperref[1.f]{(f)} Compare the results from the various methods. Which method would you recommend?
+\end{enumerate}
+
+{\vspace{1em}\noindent\textbf{Note(s)}\vspace{1em}}
+
+The data is statistics for a large number of US Colleges from the 1995 issue of US News and World Report. Table~\ref{tab:college} contains the variable descriptions, which can also be found on the \href{https://islp.readthedocs.io/en/latest/datasets/College.html}{ISLP documentation}. Tables~\ref{tab:college_descriptive_statistics_1} - \ref{tab:college_descriptive_statistics_3} contain the descriptive statistics for the data.
+
+\vspace{1em}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lp{11cm}}
+        \toprule
+        \textbf{Variable} & \textbf{Description} \\
+        \midrule
+        Private & A factor with levels No and Yes indicating private or public university \\
+        Apps & Number of applications received \\
+        Accept & Number of applications accepted \\
+        Enroll & Number of new students enrolled \\
+        Top10perc & Pct. new students from top 10\% of H.S. class \\
+        Top25perc & Pct. new students from top 25\% of H.S. class \\
+        F.Undergrad & Number of full time undergraduates \\
+        P.Undergrad & Number of part time undergraduates \\
+        Outstate & Out-of-state tuition \\
+        Room.Board & Room and board costs \\
+        Books & Estimated book costs \\
+        Personal & Estimated personal spending \\
+        PhD & Pct. of faculty with Ph.D.s \\
+        Terminal & Pct. of faculty with terminal degree \\
+        S.F.Ratio & Student/faculty ratio \\
+        perc.alumni & Pct. alumni who donate \\
+        Expend & Instructional expenditure per student \\
+        Grad.Rate & Graduation rate \\
+        \bottomrule
+    \end{tabular}
+    \caption{College Dataset Variables}
+    \label{tab:college}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        & Apps & Accept & Enroll & Top10perc & Top25perc & F.Undergrad \\
+        \midrule
+       count & 777.00 & 777.00 & 777.00 & 777.00 & 777.00 & 777.00 \\
+       mean & 3001.64 & 2018.80 & 779.97 & 27.56 & 55.80 & 3699.91 \\
+       std & 3870.20 & 2451.11 & 929.18 & 17.64 & 19.80 & 4850.42 \\
+       min & 81.00 & 72.00 & 35.00 & 1.00 & 9.00 & 139.00 \\
+       25% & 776.00 & 604.00 & 242.00 & 15.00 & 41.00 & 992.00 \\
+       50% & 1558.00 & 1110.00 & 434.00 & 23.00 & 54.00 & 1707.00 \\
+       75% & 3624.00 & 2424.00 & 902.00 & 35.00 & 69.00 & 4005.00 \\
+       max & 48094.00 & 26330.00 & 6392.00 & 96.00 & 100.00 & 31643.00 \\
+       \bottomrule
+       \end{tabular}       
+    \caption{College Dataset Descriptive Statistics (Part 1)}
+    \label{tab:college_descriptive_statistics_1}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        & P.Undergrad & Outstate & Room.Board & Books & Personal & PhD \\
+        \midrule
+       count & 777.00 & 777.00 & 777.00 & 777.00 & 777.00 & 777.00 \\
+       mean & 855.30 & 10440.67 & 4357.53 & 549.38 & 1340.64 & 72.66 \\
+       std & 1522.43 & 4023.02 & 1096.70 & 165.11 & 677.07 & 16.33 \\
+       min & 1.00 & 2340.00 & 1780.00 & 96.00 & 250.00 & 8.00 \\
+       25% & 95.00 & 7320.00 & 3597.00 & 470.00 & 850.00 & 62.00 \\
+       50% & 353.00 & 9990.00 & 4200.00 & 500.00 & 1200.00 & 75.00 \\
+       75% & 967.00 & 12925.00 & 5050.00 & 600.00 & 1700.00 & 85.00 \\
+       max & 21836.00 & 21700.00 & 8124.00 & 2340.00 & 6800.00 & 103.00 \\
+       \bottomrule
+       \end{tabular}
+    \caption{College Dataset Descriptive Statistics (Part 2)}
+    \label{tab:college_descriptive_statistics_2}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrrr}
+        \toprule
+        & Terminal & S.F.Ratio & perc.alumni & Expend & Grad.Rate \\
+        \midrule
+       count & 777.00 & 777.00 & 777.00 & 777.00 & 777.00 \\
+       mean & 79.70 & 14.09 & 22.74 & 9660.17 & 65.46 \\
+       std & 14.72 & 3.96 & 12.39 & 5221.77 & 17.18 \\
+       min & 24.00 & 2.50 & 0.00 & 3186.00 & 10.00 \\
+       25% & 71.00 & 11.50 & 13.00 & 6751.00 & 53.00 \\
+       50% & 82.00 & 13.60 & 21.00 & 8377.00 & 65.00 \\
+       75% & 92.00 & 16.50 & 31.00 & 10830.00 & 78.00 \\
+       max & 100.00 & 39.80 & 64.00 & 56233.00 & 118.00 \\
+       \bottomrule
+       \end{tabular}
+    \caption{College Dataset Descriptive Statistics (Part 3)}
+    \label{tab:college_descriptive_statistics_3}
+\end{table}
+
+\noindent\rule{\textwidth}{0.4pt}
+
+
+{\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+Due to the wide range of values in the college data, the college data was scaled using the standard scalar transform from scikit-learn.
+
+\vspace{1em}
+\label{1.a}\noindent\textbf{1 a)}
+
+\begin{center}
+    \begin{tabular}{lclc}
+    \toprule
+    \textbf{Dep. Variable:}    &        y         & \textbf{  R-squared:         } &     0.923   \\
+    \textbf{Model:}            &       OLS        & \textbf{  Adj. R-squared:    } &     0.921   \\
+    \textbf{Method:}           &  Least Squares   & \textbf{  F-statistic:       } &     370.2   \\
+    \textbf{Date:}             & Mon, 02 Feb 2026 & \textbf{  Prob (F-statistic):} & 3.18e-279   \\
+    \textbf{Time:}             &     18:37:21     & \textbf{  Log-Likelihood:    } &   -4582.2   \\
+    \textbf{No. Observations:} &         543      & \textbf{  AIC:               } &     9200.   \\
+    \textbf{Df Residuals:}     &         525      & \textbf{  BIC:               } &     9278.   \\
+    \textbf{Df Model:}         &          17      & \textbf{                     } &             \\
+    \textbf{Covariance Type:}  &    nonrobust     & \textbf{                     } &             \\
+    \bottomrule
+    \end{tabular}
+    \begin{tabular}{lcccccc}
+                          & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+    \midrule
+    \textbf{Intercept}    &    3367.3648  &      144.649     &    23.280  &         0.000        &     3083.204    &     3651.526     \\
+    \textbf{Accept}       &    3902.1993  &      124.078     &    31.449  &         0.000        &     3658.448    &     4145.951     \\
+    \textbf{Enroll}       &    -726.6304  &      225.644     &    -3.220  &         0.001        &    -1169.906    &     -283.355     \\
+    \textbf{Top10perc}    &    1014.8151  &      133.744     &     7.588  &         0.000        &      752.077    &     1277.553     \\
+    \textbf{Top25perc}    &    -361.2881  &      118.756     &    -3.042  &         0.002        &     -594.584    &     -127.993     \\
+    \textbf{F.Undergrad}  &     310.4624  &      203.903     &     1.523  &         0.128        &      -90.104    &      711.029     \\
+    \textbf{P.Undergrad}  &      45.9057  &       68.948     &     0.666  &         0.506        &      -89.541    &      181.353     \\
+    \textbf{Outstate}     &    -366.4795  &      100.632     &    -3.642  &         0.000        &     -564.171    &     -168.788     \\
+    \textbf{Room.Board}   &     185.0855  &       70.459     &     2.627  &         0.009        &       46.670    &      323.501     \\
+    \textbf{Books}        &     -20.3741  &       51.773     &    -0.394  &         0.694        &     -122.081    &       81.333     \\
+    \textbf{Personal}     &       9.8714  &       55.221     &     0.179  &         0.858        &      -98.610    &      118.353     \\
+    \textbf{PhD}          &    -160.0626  &       95.706     &    -1.672  &         0.095        &     -348.077    &       27.951     \\
+    \textbf{Terminal}     &     -28.3167  &       94.736     &    -0.299  &         0.765        &     -214.426    &      157.792     \\
+    \textbf{S.F.Ratio}    &      57.4472  &       65.785     &     0.873  &         0.383        &      -71.787    &      186.682     \\
+    \textbf{perc.alumni}  &      -1.0088  &       65.600     &    -0.015  &         0.988        &     -129.880    &      127.862     \\
+    \textbf{Expend}       &     440.0177  &       82.356     &     5.343  &         0.000        &      278.231    &      601.805     \\
+    \textbf{Grad.Rate}    &     161.8552  &       66.096     &     2.449  &         0.015        &       32.009    &      291.701     \\
+    \textbf{Private\_Yes} &    -380.2813  &      187.179     &    -2.032  &         0.043        &     -747.993    &      -12.570     \\
+    \bottomrule
+    \end{tabular}
+    %\caption{OLS Regression Results}
+\end{center}
+
+The test MSE for the linear regression model is $642,753.9$ and the test $\mathrm{R^2}$ is $0.946$.
+
+
+\vspace{2em}
+\label{1.b}\noindent\textbf{1 b)}
+\medskip
+
+Two regression tree models with maximum depths of 3 and 10 were fit to the data to establish baseline performance. Training and test MSE and $\mathrm{R^2}$ for the two trees are given in table \ref{tab:mse_r2_regression_trees}. Figure \ref{fig:prob_1_tree_max_depth_3} shows the tree with max depth of 3. The tree with a max depth of 10, not displayed due to its complexity, outperforms the smaller tree in both test MSE and test $\mathrm{R^2}$. The low training MSE and high training $\mathrm{R^2}$ suggest that the tree with a max depth of 10 is overfitting the training data, however, it is still able to generalize well to the test data. The most important feature for both trees is the numbers of applications accepted and the percentage of new students from the top 10\% of the high school class (Table \ref{tab:feature_importance_trees}).
+
+\vspace{1em}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Max Depth} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
+        \midrule
+       3 & $1.579 \times 10^6$ & $1.952 \times 10^6$ & 0.90 & 0.84 \\
+       10 & $9,582$ & $1.0699 \times 10^6$ & 0.999 & 0.91\\
+       \bottomrule
+       \end{tabular}
+    \caption{MSE and $\mathrm{R^2}$ for Regression Trees with Different Max Depths}
+    \label{tab:mse_r2_regression_trees}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{prob_1_tree_max_depth_3.png}
+    \caption{Tree with Max Depth of 3}
+    \label{fig:prob_1_tree_max_depth_3}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Max Depth = 3}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.966403 \\
+            Top10perc & 0.033597 \\
+            Intercept & 0.000000 \\
+            Personal & 0.000000 \\
+            Grad.Rate & 0.000000 \\
+            Expend & 0.000000 \\
+            perc.alumni & 0.000000 \\
+            S.F.Ratio & 0.000000 \\
+            Terminal & 0.000000 \\
+            PhD & 0.000000 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Max Depth = 10}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.910615 \\
+            Top10perc & 0.038446 \\
+            Top25perc & 0.016548 \\
+            F.Undergrad & 0.015113 \\
+            Outstate & 0.003668 \\
+            Expend & 0.002848 \\
+            PhD & 0.002825 \\
+            Grad.Rate & 0.002648 \\
+            S.F.Ratio & 0.002398 \\
+            Books & 0.001412 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \caption{Feature Importance for Regression Trees}
+    \label{tab:feature_importance_trees}
+\end{table}
+
+\vspace{1em}
+\label{1.c}\noindent\textbf{1 c)}
+\medskip
+
+To evaluate the effect of pruning, we applied cost-complexity pruning to the tree with maximum depth 10. Figure \ref{fig:pruned_best_tree} shows the pruned best tree, which has an alpha value of 17,157.520. Table \ref{tab:pruned_regression_tree_table} shows the training and test MSE and $\mathrm{R^2}$ for both the unpruned and pruned trees. Pruning improved test MSE and test $\mathrm{R^2}$, indicating reduced overfitting. Table \ref{tab:feature_importance_pruned_regression_tree} shows the feature importance for the pruned tree. The top six features (Accept, Top10perc, Top25perc, F.Undergrad, Outstate, and Expend) are identical to those in the unpruned tree. Personal is the only additional feature with non-zero importance in the pruned tree that was not among the top features in the unpruned model. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pruned_best_tree_alpha_17157.520.png}
+    \caption{Pruned Best Tree}
+    \label{fig:pruned_best_tree}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Tree Type} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
+        \midrule
+        Unpruned & $9,582$ & $1.0699 \times 10^6$ & 0.999 & 0.91\\ \\
+        Pruned & $332,673$ & $642,753$ & 0.980 & 0.93\\
+        \bottomrule
+    \end{tabular}
+    \caption{MSE and $\mathrm{R^2}$ for Regression Trees with Different Max Depths}
+    \label{tab:pruned_regression_tree_table}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lr}
+        \toprule
+        \textbf{Feature} & \textbf{Importance} \\
+        \midrule
+        Accept & 0.924818 \\
+        Top10perc & 0.039207 \\
+        Top25perc & 0.013527 \\
+        F.Undergrad & 0.009759 \\
+        Outstate & 0.004465 \\
+        Expend & 0.003317 \\
+        Personal & 0.002588 \\
+        PhD & 0.002319 \\
+        Intercept & 0.000000 \\
+        S.F.Ratio & 0.000000 \\
+        Grad.Rate & 0.000000 \\
+        perc.alumni & 0.000000 \\
+        Books & 0.000000 \\
+        Terminal & 0.000000 \\
+        Room.Board & 0.000000 \\
+        P.Undergrad & 0.000000 \\
+        Enroll & 0.000000 \\
+        Private\_Yes & 0.000000 \\
+        \bottomrule
+        \end{tabular}
+    \caption{Feature Importance for Pruned Regression Tree}
+    \label{tab:feature_importance_pruned_regression_tree}
+\end{table}
+
+\vspace{1em}
+\label{1.d}\noindent\textbf{1 d)}
+\medskip
+
+Table \ref{tab:bagging_regression_tree_table} shows the training and test MSE and $\mathrm{R^2}$ for the regression trees with bagging for B values of 500 and 1000. Both trees have similar training and test MSE and $\mathrm{R^2}$, indicating that a value of b=500 is sufficient for this data. Table \ref{tab:feature_importance_bagging_regression_trees} shows the feature importance for the regression trees with bagging for B values of 500 and 1000. The top six features (Accept, Enroll, Top10perc, Top25perc, Expend, and Grad.Rate) are the same for both trees.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{B value} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
+        \midrule
+        500 & $351,729.95$ & $655,166.13$ & 0.978 & 0.945\\ \\
+        1000 & $325,604.62$ & $652,137.78$ & 0.980 & 0.945\\
+        \bottomrule
+    \end{tabular}
+    \caption{MSE and $\mathrm{R^2}$ for Regression Trees with Bagging for Different B Values}
+    \label{tab:bagging_regression_tree_table}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Bagging (B=500)}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.802421 \\
+            Enroll & 0.103269 \\
+            Top10perc & 0.023217 \\
+            Top25perc & 0.017734 \\
+            Expend & 0.009980 \\
+            Grad.Rate & 0.008378 \\
+            F.Undergrad & 0.005095 \\
+            S.F.Ratio & 0.004847 \\
+            perc.alumni & 0.004394 \\
+            Outstate & 0.004204 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Bagging (B=1000)}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.798977 \\
+            Enroll & 0.108115 \\
+            Top10perc & 0.022769 \\
+            Top25perc & 0.018266 \\
+            Expend & 0.008796 \\
+            Grad.Rate & 0.008535 \\
+            F.Undergrad & 0.005027 \\
+            S.F.Ratio & 0.004975 \\
+            perc.alumni & 0.004345 \\
+            Outstate & 0.004221 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \caption{Feature Importance for Regression Trees with Bagging (B=500 and B=1000)}
+    \label{tab:feature_importance_bagging_regression_trees}
+\end{table}
+
+
+\vspace{1em}
+\label{1.e}\noindent\textbf{1 e)}
+\medskip
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Number of Estimators} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
+        \midrule
+        500 & $418,695.37$ & $1,055,332.13$ & 0.974 & 0.911\\ \\
+        1000 & $386,329.45$ & $1,086,990.94$ & 0.976 & 0.909\\
+        \bottomrule
+    \end{tabular}
+    \caption{MSE and $\mathrm{R^2}$ for Regression Trees with Random Forest for Different Number of Estimators}
+    \label{tab:RF_regression_tree_table}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Bagging (B=500)}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.259394 \\
+            Enroll & 0.194531 \\
+            F.Undergrad & 0.152924 \\
+            P.Undergrad & 0.055010 \\
+            Top25perc & 0.043281 \\
+            PhD & 0.038476 \\
+            Top10perc & 0.036371 \\
+            Private\_Yes & 0.031446 \\
+            Expend & 0.029643 \\
+            Terminal & 0.027510 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \textbf{Bagging (B=1000)}
+        \vspace{0.5em}
+        \begin{tabular}{lr}
+            \toprule
+            \textbf{Feature} & \textbf{Importance} \\
+            \midrule
+            Accept & 0.252276 \\
+            Enroll & 0.193074 \\
+            F.Undergrad & 0.161521 \\
+            P.Undergrad & 0.050646 \\
+            Top25perc & 0.045768 \\
+            Top10perc & 0.039110 \\  
+            PhD & 0.035762 \\
+            Private\_Yes & 0.031904 \\
+            Expend & 0.029108 \\
+            Terminal & 0.028647 \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \caption{Feature Importance for Regression Trees with Random Forest (n estimators=500 and n estimators=1000)}
+    \label{tab:feature_importance_RF_regression_trees}
+\end{table}
+
+
+\vspace{1em}
+\label{1.f}\noindent\textbf{1 f)}
+\medskip
+
+I would recommend the random forest with bagging classifier. Although the linear regression model has a similar MSE for the test data, the random forest will work with non-linear relationships making it a more robust classifier. The major benefit to the linear regression model is the interpretability of the coefficients.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Method} & \textbf{Training MSE}  & \textbf{Test MSE} & \textbf{Training $\mathrm{R^2}$} & \textbf{Test $\mathrm{R^2}$} \\
+        \midrule
+        Linear Regression & $1,251,247.29$ & $642,753.89$ & 0.923 & 0.946\\ \\
+        Best Regression Tree (alpha=17,157.520) & $9,582$ & $1,069,900$ & 0.999 & 0.911\\ \\
+        Pruned Best Regression Tree & $332,673$ & $642,753$ & 0.980 & 0.93\\ \\
+        Bagging, B=500 & $351,729.95$ & $655,166.13$ & 0.978 & 0.945\\ \\
+        Bagging, B=1000 & $325,604.62$ & $652,137.78$ & 0.980 & 0.945\\ \\
+        Random Forest, n estimators=500 & $418,695.37$ & $1,055,332.13$ & 0.974 & 0.911\\ \\
+        Random Forest, n estimators=1000 & $386,329.45$ & $1,086,990.94$ & 0.976 & 0.909\\ \\
+        \bottomrule
+    \end{tabular}
+    \caption{MSE and $\mathrm{R^2}$ for Different Regression Methods}
+    \label{tab:regression_methods_table}
+\end{table}
+
+
+\pagebreak
+
+
+% ================================================================
+% ================================================================
+%                 Problem 2: Admission Data Analysis 
+% ================================================================
+% ================================================================
+
+{\noindent\Large\textbf{Problem 2: Admission Data Analysis}\vspace{1em}} 
+
+Consider the business school admission data available in the admission.csv. The admission officer of a business school has used an “\textit{index}” of undergraduate grade point average (GPA,X1) and graduate management aptitude test (GMAT,X2) scores to help decide which applicants should be admitted to the school's graduate programs. This index is used to categorize each applicant into one of three groups - admit (group 1), do not admit (group 2), and borderline (group 3). We will take the last \underline{\textbf{\textit{four}}} observations in \underline{\textbf{\textit{each category}}} as test data and the remaining observations as training data.
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\begin{enumerate}[label=, leftmargin=1em]
+    \item \hyperref[2.a]{(a)} Perform an exploratory analysis of the training data by examining appropriate plots and comment on how helpful these predictors may be in predicting response.
+    
+    \item \hyperref[2.b]{(b)} Perform an LDA using the training data. Superimpose the decision boundary on an appropriate display of the data. Does the decision boundary seem sensible? In addition, compute the confusion matrix and overall misclassification rate based on both training and test data. What do you observe?
+    
+    \item \hyperref[2.c]{(c)} Repeat (b) using QDA.
+    
+    \item \hyperref[2.d]{(d)} Fit a KNN with K chosen optimally using test error rate. Report error rate, sensitivity, specificity, and AUC for the optimal KNN based on the training data. Also, report its estimated test error rate.
+    
+    \item \hyperref[2.e]{(e)} Compare the results in (b), (c) and (d). Which classifier would you recommend? Justify your conclusions.
+\end{enumerate}
+
+{\vspace{1em}\noindent\textbf{Note(s)}\vspace{1em}}
+
+Test/train data was split using the following code:
+\begin{lstlisting}[language=Python]
+train_data = admin_data[admin_data.groupby('Group').cumcount(ascending=False) >= 4]
+test_data = admin_data.groupby('Group').tail(4)
+\end{lstlisting}
+
+The following metrics are useful for evaluating the performance of classifiers. We will use some of them when evaluating the performance of the KNN classifier.
+
+\vspace{1em}
+\textbf{Error rate}: percentage misclassification
+\[
+\frac{\text{Misclassified}}{\text{Total}} = 1 - \text{Accuracy}
+\]
+
+\textbf{Sensitivity} (\textit{true positive rate}): measures the proportion of actual positives correctly identified as positive 
+\[
+\frac{\text{Number of true positives}}{\text{Number of true positives} + \text{Number of false negatives}}
+\]
+
+\textbf{Specificity} (\textit{true negative rate}): measures the proportion of actual negatives correctly identified. Note: Also called recall.
+\[
+\frac{\text{Number of true negatives}}{\text{Number of true negatives} + \text{Number of false positives}}
+\]
+
+\textbf{Precision}: Ratio of the correctly predicted class to the total predicted class
+\[
+\frac{\text{Number of true positives}}{\text{Number of true positives} + \text{Number of false positives}}
+\]
+
+\textbf{F1 Score}: A harmonic mean between the Precision and Recall score
+\[
+2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+\]
+
+\textbf{ROC Curve}: A Receiver Operating Characteristic (ROC) curve is a graphical plot that illustrates the diagnostic ability of a binary classifier system by plotting the true-positive rate (sensitivity) against the false-positive rate ($1 - \text{specificity}$) across various decision thresholds~\cite{roc_wiki}.
+
+\noindent\rule{\textwidth}{0.4pt}
+
+{\vspace{1em}\noindent\Large\textbf{Solution}\vspace{1em}}
+
+\label{2.a}\noindent\textbf{2 a)}
+\medskip
+
+The following table and plots were generated to explore the admission training data
+
+\begin{itemize}
+    \item Table \ref{tab:admission_data_descriptive_statistics}: Descriptive statistics for the admission data.
+    \item Figure \ref{fig:admission_data_EDA_histograms}: Distribution plots for the GPA, GMAT, and Group.
+    \item Figure \ref{fig:admission_data_EDA_scatterplot}: Scatter plot of GPA vs GMAT.
+    \item Figure \ref{fig:admission_data_EDA_boxplots}: Box plots for the GPA and GMAT by Group.
+\end{itemize}
+
+We can see that the data is relatively balanced across groups and that there is good separation between the groups (see Figure \ref{fig:admission_data_EDA_scatterplot}). Additionally, There is not a large variation in the distribution of GPA and GMAT within and across each group. In particular, the scatter plot shows that, given a good classifier, we should be able to separate the groups well. 
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        & GPA & GMAT & Group \\
+        \midrule
+        \textbf{count} & 85 & 85 & 85 \\
+        \textbf{mean} & 2.97 & 488.45 & 1.94 \\
+        \textbf{std} & 0.42 & 81.52 & 0.82 \\
+        \textbf{min} & 2.13 & 313 & 1 \\
+        \textbf{25\%} & 2.60 & 425 & 1 \\
+        \textbf{50\%} & 3.01 & 482 & 2 \\
+        \textbf{75\%} & 3.30 & 538 & 3 \\
+        \textbf{max} & 3.80 & 693 & 3 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Admission Data Descriptive Statistics}
+    \label{tab:admission_data_descriptive_statistics}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{admission_data_EDA_histograms.png}
+    \caption{Training Admission Data - Distribution Plots}
+    \label{fig:admission_data_EDA_histograms}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{admission_data_EDA_scatterplot.png}
+    \caption{Training Admission Data - Scatter Plot of GPA vs GMAT}
+    \label{fig:admission_data_EDA_scatterplot}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{admission_data_EDA_boxplots.png}
+    \caption{Training Admission Data - Box Plots of GPA and GMAT by Group}
+    \label{fig:admission_data_EDA_boxplots}
+\end{figure}
+
+\vspace{1em}
+\label{2.b}\noindent\textbf{2 b)}
+\medskip
+
+Figure \ref{fig:problem_2_lda_decision_boundaries} shows the Admission Data with LDA decision boundaries. The boundaries are look reasonable, but there is room for improvement as the misclassification rate for the test data was 25\%. From the test data, we can see that the LDA has the most trouble classifying group 2, however three of the four test data points live on or near the decision boundary. It may be worthwhile exploring different train/test splits to study how much role the sampling has on the classifier's performance. Tables \ref{tab:lda_confusion_matrix}, \ref{tab:lda_confusion_matrix_test}, and \ref{tab:lda_misclassification_rates} show the confusion matrices for the training and test data respectively and the misclassification rates for the training and test data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{problem_2_lda_decision_boundaries.png}
+    \caption{Admission Data with LDA Decision Boundaries}
+    \label{fig:problem_2_lda_decision_boundaries}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+    \toprule
+    Truth & 1 & 2 & 3 \\
+    Predicted &  &  &  \\
+    \midrule
+    1 & 25 & 0 & 1 \\
+    2 & 0 & 24 & 0 \\
+    3 & 2 & 0 & 21 \\
+    \bottomrule
+    \end{tabular}
+    \caption{LDA Confusion Matrix for Training Data}
+    \label{tab:lda_confusion_matrix}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        Truth & 1 & 2 & 3 \\
+        Predicted &  &  &  \\
+        \midrule
+        1 & 3 & 0 & 0 \\
+        2 & 0 & 2 & 0 \\
+        3 & 1 & 2 & 4 \\
+        \bottomrule
+    \end{tabular}
+    \caption{LDA Confusion Matrix for Test Data}
+    \label{tab:lda_confusion_matrix_test}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lr}
+        \toprule
+        \textbf{Data} & \textbf{Misclassification Rate} \\
+        \midrule
+        \textbf{Test} & 25.00\% \\
+        \textbf{Train} & 4.11\% \\
+        \textbf{Total} & 7.06\% \\
+        \bottomrule
+    \end{tabular}
+    \caption{LDA Misclassification Rates}
+    \label{tab:lda_misclassification_rates}
+\end{table}
+
+
+\vspace{1em}
+\label{2.c}\noindent\textbf{2 c)}
+\medskip
+
+Figure \ref{fig:problem_2_qda_decision_boundaries} shows the Admission Data with QDA decision boundaries. The quadratic boundaries provide better separation between classes compared to the linear boundaries from LDA. This is further reflected in the confusion matrices (tables \ref{tab:qda_confusion_matrix_train} and \ref{tab:qda_confusion_matrix_test}) and misclassification rates (table \ref{tab:qda_misclassification_rates}). Going from LDA to QDA, the misclassification rate for the test data decreased from 25\% to 16.67\% and the total misclassification rate decreased from 7.06\% to 4.71\%.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{problem_2_qda_decision_boundaries.png}
+    \caption{Admission Data with LDA Decision Boundaries}
+    \label{fig:problem_2_qda_decision_boundaries}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        Truth & 1 & 2 & 3 \\
+        Predicted &  &  &  \\
+        \midrule
+        1 & 26 & 0 & 1 \\
+        2 & 0 & 24 & 0 \\
+        3 & 1 & 0 & 21 \\
+        \bottomrule
+    \end{tabular}
+    \caption{QDA Confusion Matrix for Training Data}
+    \label{tab:qda_confusion_matrix_train}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        Truth & 1 & 2 & 3 \\
+        Predicted &  &  &  \\
+        \midrule
+        1 & 4 & 0 & 0 \\
+        2 & 0 & 2 & 0 \\
+        3 & 0 & 2 & 4 \\
+        \bottomrule
+    \end{tabular}
+    \caption{QDA Confusion Matrix for Test Data}
+    \label{tab:qda_confusion_matrix_test}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lr}
+        \toprule
+        \textbf{Data} & \textbf{Misclassification Rate} \\
+        \midrule
+        \textbf{Test} & 16.67\% \\
+        \textbf{Train} & 2.74\% \\
+        \textbf{Total} & 4.71\% \\
+        \bottomrule
+    \end{tabular}
+    \caption{QDA Misclassification Rates}
+    \label{tab:qda_misclassification_rates}
+\end{table}
+
+\vspace{1em}
+\label{2.d}\noindent\textbf{2 d)}
+\medskip
+
+For a KNN classifier, the predicted probability for a class is the proportion of the $K$ neighbors belonging to that class, i.e.,
+\[
+P(\text{class } k \mid x) = \frac{\text{number of neighbors in class } k}{K}
+\]
+The ROC curve is generated by varying the probability threshold required to classify a point as positive. When building the ROC curve, we vary $t \in [0, 1]$ with the decision rule: predict Class $n$ if $P(\text{Class } n \mid x) \geq t$.
+
+For a multiclass classification problem, we can no longer generate a single ROC curve since it is based on a binary classifier. We can use the one-vs-all scheme, which compares each class against all the others (combined as one)\footnote{\url{https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc.html}}.
+
+\textbf{NOTE}: Since KNN is a distance based method, we want to make sure that GMAT and GPA are on similar scales. We are going to use the standard scaling method from scikit learn on our training and test data. All plots are generated using data transformed back into the original coordinates.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{problem_2_knn_k_vs_error_rate.png}
+    \caption{KNN: K vs Error Rate}
+    \label{fig:problem_2_knn_k_vs_error_rate}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{problem_2_knn_decision_boundaries.png}
+    \caption{KNN: Decision Boundaries}
+    \label{fig:problem_2_knn_decision_boundaries}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        Truth & 1 & 2 & 3 \\
+        Predicted &  &  &  \\
+        \midrule
+        1 & 27 & 0 & 0 \\
+        2 & 0 & 24 & 0 \\
+        3 & 2 & 1 & 19 \\
+        \bottomrule
+    \end{tabular}
+    \caption{KNN Confusion Matrix for Training Data, optimal K=2}
+    \label{tab:knn_confusion_matrix_train}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        Truth & 1 & 2 & 3 \\
+        Predicted &  &  &  \\
+        \midrule
+        1 & 4 & 0 & 0 \\
+        2 & 0 & 3 & 1 \\
+        3 & 0 & 0 & 4 \\
+        \bottomrule
+    \end{tabular}
+    \caption{KNN Confusion Matrix for Test Data, optimal K=2}
+    \label{tab:knn_confusion_matrix_test}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Class} & \textbf{Sensitivity} & \textbf{Specificity} \\
+        \midrule
+        1 & 1.000 & 0.9565 \\
+        2 & 1.000 & 0.9796 \\
+        3 & 0.8636 & 1.0000 \\
+        \bottomrule
+    \end{tabular}
+    \hspace{2em}
+    \begin{tabular}{lr}
+        \toprule
+        \textbf{Metric} & \textbf{Value} \\
+        \midrule
+        AUC (Macro OvR) & 0.9986 \\
+        Test Accuracy & 0.9167 \\
+        Test Error Rate & 0.0833 \\
+        \bottomrule
+    \end{tabular}
+    \caption{KNN Classification Metrics}
+    \label{tab:knn_classification_metrics}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{problem_2_knn_roc_curve.png}
+    \caption{KNN: ROC Curve}
+    \label{fig:problem_2_knn_roc_curve}
+\end{figure}
+
+
+\vspace{1em}
+\label{2.e}\noindent\textbf{2 e)}
+\medskip    
+
+Fig \ref{fig:decision_boundaries_comparison} shows the decision boundaries for LDA, QDA, and KNN and tables \ref{tab:misclassification_rates_comparison} and \ref{tab:confusion_matrices_comparison}  show misclassification rates and confusion matrices for the training and test data respectively. We can see that the KNN classifier outperforms the other two classifiers, with the KNN having a misclassification rate for the test data of 8.3\% compared to 16.7\% and 25\% for QDA and LDA respectively. Given the lower test error rate and overall error rate, I would recommend the KNN classifier.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{problem_2_lda_decision_boundaries.png}
+        \caption{LDA}
+        \label{fig:sub1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{problem_2_qda_decision_boundaries.png}
+        \caption{QDA}
+        \label{fig:sub2}
+    \end{subfigure}
+    
+    \vspace{1em}
+    
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{problem_2_knn_decision_boundaries.png}
+        \caption{KNN}
+        \label{fig:sub3}
+    \end{subfigure}
+    
+    \caption{Decision Boundaries for LDA, QDA, and KNN}
+    \label{fig:decision_boundaries_comparison}
+\end{figure}
+
+% Table 1: Misclassification Rates Comparison
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Method} & \textbf{Train Error} & \textbf{Test Error} & \textbf{Total Error} \\
+        \midrule
+        LDA & 4.11\% & 25.00\% & 7.06\% \\
+        QDA & 2.74\% & 16.67\% & 4.71\% \\
+        KNN (K=2) & 4.11\% & 8.3\% & 4.7\% \\
+        \bottomrule
+    \end{tabular}
+    \caption{Misclassification Rates by Classification Method}
+    \label{tab:misclassification_rates_comparison}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|ccc|ccc}
+        \toprule
+        & \multicolumn{3}{c|}{\textbf{Training}} & \multicolumn{3}{c}{\textbf{Test}} \\
+        & \multicolumn{3}{c|}{Truth} & \multicolumn{3}{c}{Truth} \\
+        & 1 & 2 & 3 & 1 & 2 & 3 \\
+        \midrule
+        \textbf{LDA} &  &  &  &  &  &  \\
+        \qquad Predicted &  &  &  &  &  &  \\
+        \qquad\qquad\quad 1 & 25 & 0 & 1 & 3 & 0 & 0 \\
+        \qquad\qquad\quad 2 & 0 & 24 & 0 & 0 & 2 & 0 \\
+        \qquad\qquad\quad 3 & 2 & 0 & 21 & 1 & 2 & 4 \\
+        \midrule
+        \textbf{QDA} &  &  &  &  &  &  \\
+        \qquad Predicted &  &  &  &  &  &  \\
+        \qquad\qquad\quad 1 & 26 & 0 & 1 & 4 & 0 & 0 \\
+        \qquad\qquad\quad 2 & 0 & 24 & 0 & 0 & 2 & 0 \\
+        \qquad\qquad\quad 3 & 1 & 0 & 21 & 0 & 2 & 4 \\
+        \midrule
+        \textbf{KNN (K=2)} &  &  &  &  &  &  \\
+        \qquad Predicted &  &  &  &  &  &  \\
+        \qquad\qquad\quad 1 & 27 & 0 & 0 & 4 & 0 & 0 \\
+        \qquad\qquad\quad 2 & 0 & 24 & 0 & 0 & 3 & 1 \\
+        \qquad\qquad\quad 3 & 2 & 1 & 19 & 0 & 0 & 4 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Confusion Matrices by Classification Method}
+    \label{tab:confusion_matrices_comparison}
+\end{table}
+
+\end{document}
+ 
+
+
