@@ -9,6 +9,8 @@
 
 
 #%% Packages
+import os
+
 from ISLP import load_data, confusion_table
 from ISLP.models import ModelSpec as MS
 
@@ -43,6 +45,8 @@ VERBOSE = False
 PRINT_LATEX = False
 SAVE_FIGS = False
 
+# Set working directory to the script's folder
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # ## Problem 1: College Data Analysis
 # 
@@ -512,7 +516,7 @@ if VERBOSE:
 # In[131]:
 
 
-admin_data = pd.read_csv("admission.csv")
+admin_data = pd.read_csv("./admission.csv")
 
 if VERBOSE:
     display(HTML('<h3>Head of Admission Data</h3>'))
